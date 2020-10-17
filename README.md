@@ -1,15 +1,3 @@
----
-address: Recife
-author:
-- SAMUEL BRISTOT LOLI
-bibliography: '/references/references.bib'
-date: 2020
-nocite: '[@*]'
-title: |
-    CODE SMELLS NO CONTEXTO DE MAPEAMENTO OBJETO-RELACIONAL EM PROJETOS
-    JAVA:
----
-
 Catálogo de Code Smells ORM
 ===========================
 
@@ -33,7 +21,7 @@ diferentes *frameworks*. Foram selecionados *code smells* cujo conteúdo
 possui pelo menos três citações em fontes diferentes nas revisões
 realizadas, resultando em oito *code smells* ORM.
 
-Este capítulo apresenta os *code smells* selecionados agrupados por
+Os *code smells* selecionados foram agrupados por
 tipos. Os tipos foram definidos como os possíveis problemas causados
 pelo conjunto de *code smells* relacionados. Para uniformização, cada
 *code smell* ORM está estruturado em: *descrição do smell*, com uma
@@ -41,12 +29,14 @@ descrição resumida do *code smell* ORM bem como exemplo prático;
 sugestão de refatoração, apresentando as melhores práticas encontradas
 nas revisões realizadas e um exemplo prático corrigindo o apresentado na
 descrição do *smell*; por fim, uma discussão e detalhamento referente ao
-*code smell* em questão. A Tabela abaixo apresenta os oito
+*code smell* em questão. 
+<!-- A Tabela abaixo apresenta os oito
 *code smells* ORM selecionados para o catálogo, contendo um breve resumo
 e categorizados por tipo de problema, seguidos pelas referências das
-evidências do RR e GLR a partir dos quais os extraímos.
+evidências do RR e GLR a partir dos quais os extraímos. -->
 
-![alt text](figures/catalogo_tabela.jpg?raw=true)
+<!-- <img src="figures/catalogo_tabela.jpg" width="800"> -->
+
 
 Dados em excesso 
 ----------------
@@ -59,7 +49,7 @@ Jiang, et al. 2016) relata que o fato do ORM operar em um nível inferior
 no retorno e assim não fornece uma abordagem ideal de recuperação de
 dados para todos os casos, podendo gerar problemas de desempenho ao
 recuperar dados em excesso do banco de dados. A Figura
-\[fig:dados\_excesso\] apresenta um exemplo ao requerer apenas a
+abaixo apresenta um exemplo ao requerer apenas a
 matricula do objeto `discente`, a consulta gerada pelo *framework* ORM
 busca mais informações que a desejada no banco de dados. A seguir são
 apresentados os *code smells* relacionados a este problema.
@@ -80,29 +70,34 @@ faz com que o objeto relacionado sempre seja recuperado do banco de
 dados mesmo quando não utilizado, podendo causar desperdício de
 processamento computacional, problemas de desempenho e manutenção pois
 não permite a alteração da estratégia de busca em nível de consulta
-(dinâmico). O [Exemplo \[alg:eager\_smell\]]{} demonstra a ocorrência do
+(dinâmico). O Exemplo abaixo demonstra a ocorrência do
 *smell* utilizando a anotação `@ManyToOne` com a estratégia de busca do
 tipo <span style="font-variant:small-caps;">Eager</span>. O objetivo do
 código é recuperar apenas a matrícula de um discente, porém recupera
 também a entidade `Pessoa` sem necessidade através de <span
 style="font-variant:small-caps;">JOIN</span>.
+  
+  **Código Java:**
 ```java
     @Entity
     class Discente{
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Pessoa pessoa;	
-    ...
+      @ManyToOne(fetch = FetchType.EAGER)
+      private Pessoa pessoa;	
+      ...
     }
 
     public static void main(String[] args) {
-    ...
-    Discente d = findDiscenteById(1);
-    d.getMatricula();
+      ...
+      Discente d = findDiscenteById(1);
+      d.getMatricula();
     }
 ```
   **Instrução SQL gerada:**
-  ---------------------------
-
+```sql
+    SELECT * FROM Discente d LEFT OUTER JOIN Pessoa p
+    ON     p.id_pessoa = d.id_pessoa WHERE   d.id=1;
+```
+---------------------------
 #### Sugestão de Refatoração
 
 A estratégia de busca definida para relacionamentos a nível de classe
@@ -126,7 +121,9 @@ recuperadas no banco de dados. O [Exemplo
 style="font-variant:small-caps;">Lazy</span>, evitando assim o <span
 style="font-variant:small-caps;">JOIN</span> desnecessário com a
 entidade `Pessoa`.
-
+  
+  **Código Java:**
+```java
     @Entity
     class Discente{
      @ManyToOne%*\Hig{(fetch = FetchType.LAZY)}%*
@@ -138,8 +135,11 @@ entidade `Pessoa`.
      Discente d = findDiscenteById(1);
      d.getMatricula();
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    SELECT * FROM Discente d WHERE d.id=1;
+```
   ---------------------------
 
 #### Detalhamento e Discussão
@@ -280,7 +280,9 @@ demonstra a ocorrência do *smell*, onde o HQL utilizado recupera todas
 as colunas da entidade `Discente`, incluindo dados grandes (coluna
 `arquivo`), sendo apenas a informação da matrícula necessária para o
 caso de uso.
-
+  
+  **Código Java:**
+```java
     public Discente findDiscenteById(Integer id){
      String hql = "FROM Discente d WHERE id = :id";
      Query q = entityManager.createQuery(hql.toString());
@@ -293,8 +295,12 @@ caso de uso.
      Discente d = findDiscenteById(1);
      d.getMatricula();
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    SELECT d.id, d.matricula, d.arquivo, d.data_cadastro, d... 
+    FROM   Discente d WHERE d.id=1;
+```
   ---------------------------
 
 #### Sugestão de Refatoração
@@ -307,7 +313,9 @@ através do construtor da classe consultada ou de um . O [Exemplo
 \[alg:projecao\_smell\_refactory\]]{} demonstra um ajuste no [Exemplo
 \[alg:projecao\_smell\]]{} utilizando o operador `NEW` para trazer o
 próprio objeto apenas com a informação necessária para o caso de uso.
-
+  
+  **Código Java:**
+```java
     public Discente findDiscenteById(Integer id){
      ...
      hql.append(%*\Hig{"SELECT new Discente(matricula) "}%*)
@@ -322,8 +330,11 @@ próprio objeto apenas com a informação necessária para o caso de uso.
      Discente d = findDiscenteById(1);
      d.getMatricula();
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    SELECT d.matricula FROM Discente d WHERE d.id=1;
+```
   ---------------------------
 
 #### Detalhamento e Discussão
@@ -377,7 +388,7 @@ evita instruções repetidas e otimiza gravações no banco de dados. Porém,
 o gerenciamento de cache de primeiro nível leva tempo e pode ser um
 problema se executadas grandes quantidades de consultas em entidades.
 
-A Figura \[fig:entitiesXdto\] apresenta o comparativo de tempo na
+A Figura abaixo apresenta o comparativo de tempo na
 execução de instruções utilizando entidade *versus* .
 
 Perante o exposto, podemos catalogar como *code smells* consultas ORM
@@ -406,7 +417,9 @@ o *smell* no qual é desejado atualizar apenas o campo `observação` da
 entidade `Discente`, mas a instrução `Update` gerada pelo ORM atualiza
 todas as colunas da entidade, incluindo índices e tipo <span
 style="font-variant:small-caps;">BLOB</span>.
-
+  
+  **Código Java:**
+```java
     @Entity
     class Discente{
     ... 
@@ -425,9 +438,16 @@ style="font-variant:small-caps;">BLOB</span>.
      d.setObservacao("Discente com pendencias");
      entityManager.persist(d);
     }
-        
+ ```       
 
   **Instrução SQL gerada:**
+```sql
+    UPDATE Discente
+    SET    id = 1, matricula = 111, observacao = "Discente com pendencias", 
+           arquivo = "arquivo BLOB" 
+    WHERE  id = 1;
+
+```
   ---------------------------
 
 #### Sugestão de Refatoração
@@ -441,7 +461,9 @@ parametrização por padrão. O [Exemplo
 \[alg:update\_smell\_refactory\]]{} apresenta a utilização da anotação
 `@DynamicUpdate` fazendo com que seja atualizado apenas o atributo
 `observacao` na instrução `Update` gerada pelo ORM.
-
+  
+  **Código Java:**
+```java
     @Entity
     %*\Hig{@DynamicUpdate}%*
     class Discente{
@@ -461,8 +483,11 @@ parametrização por padrão. O [Exemplo
      d.setObservacao("Discente com pendencias");
      entityManager.persist(d);
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    UPDATE discente SET observacao = "Discente com pendências" WHERE id = 1;
+```
   ---------------------------
 
 #### Detalhamento e Discussão
@@ -516,7 +541,9 @@ recuperando todos os registros da entidade `Discente` que entraram no
 ano de 2020, mas utilizando efetivamente apenas 10 registros que foram
 solicitados pela camada de visão, supondo que o método
 `discentesPeriodo` foi chamado com este propósito.
-
+  
+  **Código Java:**
+```java
     public List<Discente> findByYear(int year){
      String hql = "FROM Discente d WHERE ano = :ano";
      Query q = entityManager.createQuery(hql.toString());
@@ -528,8 +555,11 @@ solicitados pela camada de visão, supondo que o método
      List<Discente> discentes = findDiscenteByYear(year);
      return discentes.subList(fromIndex, Math.min(fromIndex + limit, discentes.size()));    
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    SELECT d.* FROM Discente d WHERE ano = 2020;
+```
   ---------------------------
 
 #### Sugestão de Refatoração
@@ -544,7 +574,9 @@ uma limitação nos resultados que solicitam uma coleção de dados. O
 para gerar a instrução SQL com limites para o resultado, recuperando
 apenas os 10 registros da entidade `Discente` solicitados pela camada de
 visão, evitando problemas de desempenho com o crescimento dos dados.
-
+  
+  **Código Java:**
+```java
     public List<Discente> findByYear(int year, int fromIndex, int limit){
      String hql = "FROM Discente d WHERE ano = :ano";
      Query q = entityManager.createQuery(hql.toString());
@@ -557,8 +589,11 @@ visão, evitando problemas de desempenho com o crescimento dos dados.
      int fromIndex = (page - 1) * limit;
      return List<Discente> discentes = findDiscenteByYear(year,fromIndex,limit);
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    SELECT d.* FROM Discente d WHERE ano = 2020 LIMIT 10 OFFSET 10;
+```
   ---------------------------
 
 #### Detalhamento e Discussão
@@ -598,7 +633,7 @@ implementação, cabível de refatoração por indicar possíveis problemas
 futuros relativos a desempenho com o crescimento da quantidade de
 registros.
 
-Problema do N+1 {#n1}
+Problema do N+1
 ---------------
 
 Os *frameworks* ORM abstraem o SQL e o mapeamento manual dos objetos,
@@ -613,19 +648,18 @@ completar a operação (Vlad Mihalcea 2019d). Esse problema é conhecido
 como $N+1$, quando a partir de uma instrução ORM são geradas <span
 style="font-variant:small-caps;">N</span> outras, sendo apresentado no
 Capítulo \[chap:intro\] como exemplo motivacional desta pequisa. A
-Figura \[fig:n1-representacao\] apresenta um exemplo no qual ao
+Figura abaixo apresenta um exemplo no qual ao
 solicitar uma lista do objeto `Pessoa`, a partir da consulta principal
 (`select * from pessoa`) são geradas <span
 style="font-variant:small-caps;">N</span> outras consultas para obter o
 relacionamento com a entidade `discente`.
 
-![](figures/n1-representacao.png "fig:"){width="\linewidth"}
-\[fig:n1-representacao\]
+![](figures/n1-representacao.png "fig:")
 
 Através da análise do código, podemos detectar *code smells* que podem
 gerar o problema de $N+1$, os quais são descritos a seguir.
 
-### Falta de <span style="font-variant:small-caps;">JOIN FETCH</span> nas consultas de atributos do tipo <span style="font-variant:small-caps;">Eager</span> {#sec:falta_join_fetch}
+### Falta de <span style="font-variant:small-caps;">JOIN FETCH</span> nas consultas de atributos do tipo <span style="font-variant:small-caps;">Eager</span>
 
 #### Descrição do *Smell*
 
@@ -642,7 +676,9 @@ para retornar uma lista da entidade `Discente` apresenta $N$ consultas
 adicionais para entidade `Pessoa` realizadas pelo ORM para preencher as
 informações do objeto `Pessoa` que esta com relacionamento <span
 style="font-variant:small-caps;">Eager</span>.
-
+  
+  **Código Java:**
+```java
     @Entity
     class Discente{
      ...
@@ -661,11 +697,19 @@ style="font-variant:small-caps;">Eager</span>.
      List<Discente> d = findDiscenteByYear(2020);
      ...
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    SELECT * FROM Discente d WHERE   d.ano=2020;
+    -- Consultas adicionais geradas: 
+    SELECT * FROM Pessoa p where p.id_pessoa = 1;
+    SELECT * FROM Pessoa p where p.id_pessoa = 2;
+    SELECT * FROM Pessoa p where p.id_pessoa = 3;
+    ....
+```
   ---------------------------
 
-#### Sugestão de Refatoração {#subsection:refat}
+#### Sugestão de Refatoração 
 
 Para corrigir, uma das formas possíveis seria alterar o mapeamento para
 <span style="font-variant:small-caps;">Lazy</span>. Porém, se não for
@@ -680,7 +724,9 @@ $N$ consultas extras. O [Exemplo
 problema de N+1 gerado pelo [Exemplo \[alg:join\_fetch\_smell\]]{}
 adicionando <span style="font-variant:small-caps;">JOIN FETCH</span>
 para recuperar em forma de junção a entidade `Pessoa`.
-
+  
+  **Código Java:**
+```java
     @Entity
     class Discente{
      ...
@@ -701,8 +747,12 @@ para recuperar em forma de junção a entidade `Pessoa`.
      List<Discente> d = findDiscenteByYear(2020);
      ...
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    SELECT * FROM Discente d INNER JOIN Pessoa p
+    ON     p.id_pessoa = d.id_pessoa WHERE d.ano=2020;
+```
   ---------------------------
 
 #### Detalhamento e Discussão
@@ -780,7 +830,7 @@ as formas descritas no parágrafo anterior:
     na consulta principal. Após esta refatoração, a quantidade de
     consultas adicionais diminuiu de 6767 para 116.
 
-    ![[]{data-label="fig:fetch"}](figures/fetch.png){width="\linewidth"}
+    ![[]{data-label="fig:fetch"}](figures/fetch.png)
 
 -   Refatoração 2 - Ajuste da estratégia de busca: Observou-se que as
     116 consultas adicionais que restaram eram referentes a atributos
@@ -796,7 +846,7 @@ as formas descritas no parágrafo anterior:
     segundos em média e a quantidade de consultas adiciona diminuiu de
     116 para 0.
 
-    ![[]{data-label="fig:eager"}](figures/eager.png){width="\linewidth"}
+    ![[]{data-label="fig:eager"}](figures/eager.png)
 
 Conforme as situações expostas, consultas ORM utilizando entidades que
 contenham atributos com a estratégia de busca do tipo <span
@@ -821,7 +871,9 @@ demonstra uma consulta para recuperação de uma lista do objeto `Pessoa`
 e ao acessar o atributo `discentes` em uma estrutura de repetição, são
 geradas consultas extras para carregar o relacionamento <span
 style="font-variant:small-caps;">Lazy</span>.
-
+  
+  **Código Java:**
+```java
     @Entity
     class Pessoa{
      ...
@@ -841,8 +893,16 @@ style="font-variant:small-caps;">Lazy</span>.
       assertNotNull(pessoa.getDiscentes());
      }
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    SELECT * FROM Pessoa p;
+    -- Consultas adicionais geradas:
+    SELECT * FROM Discente d where d.id_pessoa = 1
+    SELECT * FROM Discente d where d.id_pessoa = 2
+    SELECT * FROM Discente d where d.id_Pessoa = 3
+    ....
+```
   ---------------------------
 
 #### Sugestão de Refatoração {#refatoracao_lazy}
@@ -858,25 +918,34 @@ Abaixo listamos duas soluções possíveis para evitar $N+1$ neste caso:
     \[alg:n1\_lazy\_smell\_refactory2\]]{} apresenta a refatoração do
     [Exemplo \[alg:n1\_lazy\_smell\]]{} utilizando a anotação
     `@BatchSize`
+  
+  **Código Java:**
+```java
+    @Entity
+    class Pessoa{
+      ...
+      @OneToMany(fetch = FetchType.LAZY)
+      %*\Hig{@BatchSize(size = 5)}%*
+      private List <Discente> discentes;	
+      ...
+    }
 
-        @Entity
-        class Pessoa{
-         ...
-         @OneToMany(fetch = FetchType.LAZY)
-         %*\Hig{@BatchSize(size = 5)}%*
-         private List <Discente> discentes;	
-         ...
-        }
-
-        public static void main(String[] args) {
-         List<Pessoa> pessoas = findAll();
-         for (Pessoa pessoa : pessoas){
-          assertNotNull(pessoa.getDiscentes());
-         }
-        }
-
-      **Instrução SQL gerada:**
-      ---------------------------
+    public static void main(String[] args) {
+      List<Pessoa> pessoas = findAll();
+      for (Pessoa pessoa : pessoas){
+      assertNotNull(pessoa.getDiscentes());
+      }
+    }
+```
+ **Instrução SQL gerada:**
+```sql
+    SELECT * FROM Pessoa p;
+    -- Consultas adicionais geradas:
+    SELECT * FROM Discente d where d.id_pessoa in (1,2,3,4,5)
+    SELECT * FROM Discente d where d.id_pessoa in (6,7,8,9,10)
+    ....
+```
+  ---------------------------
 
 -   <span style="font-variant:small-caps;">JOIN FETCH</span> ou
     projeções DTO: embora utilizar a anotação `@BatchSize` seja melhor
@@ -888,29 +957,35 @@ Abaixo listamos duas soluções possíveis para evitar $N+1$ neste caso:
     utilização de <span style="font-variant:small-caps;">JOIN
     FETCH</span> como refatoração para o [Exemplo
     \[alg:n1\_lazy\_smell\]]{}
+  
+  **Código Java:**
+```java
+    @Entity
+    class Pessoa{
+      ...
+      @OneToMany(fetch = FetchType.LAZY)
+      private List <Discente> discentes;	
+      ...
+    }
 
-        @Entity
-        class Pessoa{
-         ...
-         @OneToMany(fetch = FetchType.LAZY)
-         private List <Discente> discentes;	
-         ...
-        }
+    public List<Pessoa> findAll(){
+      String hql = "FROM Pessoa pes %*\Hig{JOIN FETCH pes.discentes}%*";
+      ...
+    }
 
-        public List<Pessoa> findAll(){
-         String hql = "FROM Pessoa pes %*\Hig{JOIN FETCH pes.discentes}%*";
-         ...
-        }
-
-        public static void main(String[] args) {
-         List<Pessoa> pessoas = findAll();
-          for (Pessoa pessoa : pessoas){
-           assertNotNull(pessoa.getDiscentes());
-          }
-        }
-
-      **Instrução SQL gerada:**
-      ---------------------------
+    public static void main(String[] args) {
+      List<Pessoa> pessoas = findAll();
+      for (Pessoa pessoa : pessoas){
+        assertNotNull(pessoa.getDiscentes());
+      }
+    }
+```
+**Instrução SQL gerada:**
+```sql
+    SELECT * FROM Pessoa p INNER JOIN Discente d
+    ON     p.id_pessoa = d.id_pessoa;
+```
+ ---------------------------
 
 #### Detalhamento e Discussão
 
@@ -963,7 +1038,9 @@ discentes na entidade representativa da relação `Pessoa_Discente` na
 base de dados), são geradas instruções adicionais, removendo todos os
 registros existentes da entidade `Pessoa_Discente` e adicionando-os
 novamente juntamente com o novo registro.
-
+  
+  **Código Java:**
+```java
     @Entity
     class Pessoa{
      ...
@@ -983,8 +1060,16 @@ novamente juntamente com o novo registro.
      pessoa1.add(discente);
      entityManager.persist(pessoa);
     }
-
+```
   **Instrução SQL gerada:**
+```sql
+    INSERT INTO Discente (id, matricula) VALUES (5,12345);
+    DELETE FROM Pessoa_Discente WHERE pessoa_id=1;
+    INSERT INTO Pessoa_Discente (pessoa_id, discente_id) VALUES (1, 1);
+    INSERT INTO Pessoa_Discente (pessoa_id, discente_id) VALUES (1, 2);
+    ...
+    INSERT INTO Pessoa_Discente (pessoa_id, discente_id) VALUES (1, 5);
+```
   ---------------------------
 
 #### Sugestão de Refatoração {#sugestão-de-refatoração-4}
@@ -1008,31 +1093,36 @@ Existem duas formas possíveis de ajustar este *code smell*:
     com a chave estrangeira relacionado a Pessoa, deixando de ter uma
     tabela adicional para representar a relação como no [Exemplo
     \[alg:onetomany\_smell\]]{}.
+  
+  **Código Java:**
+```java
+    @Entity
+    class Pessoa{
+      ...
+      @OneToMany(cascade = CascadeType.ALL, %*\Hig{mappedBy = "pessoa"}%*)
+      private List<Discente> discentes = new ArrayList<Discente>();	
+    }
+    @Entity
+    class Discente{
+      @Id
+      private Integer id;
+      private Integer matricula;
+      %*\Hig{@ManyToOne(fetch = FetchType.LAZY)}%*
+      %*\Hig{private Pessoa pessoa}%*;
+    }
 
-        @Entity
-        class Pessoa{
-         ...
-         @OneToMany(cascade = CascadeType.ALL, %*\Hig{mappedBy = "pessoa"}%*)
-         private List<Discente> discentes = new ArrayList<Discente>();	
-        }
-        @Entity
-        class Discente{
-         @Id
-         private Integer id;
-         private Integer matricula;
-         %*\Hig{@ManyToOne(fetch = FetchType.LAZY)}%*
-         %*\Hig{private Pessoa pessoa}%*;
-        }
-
-        public static void main(String[] args) {
-         Pessoa pessoa = findById(1);
-         Discente discente = new Discente(5,12345,pessoa);
-         pessoa1.add(discente);
-         entityManager.persist(pessoa);
-        }
-
-      **Instrução SQL gerada:**
-      ---------------------------
+    public static void main(String[] args) {
+      Pessoa pessoa = findById(1);
+      Discente discente = new Discente(5,12345,pessoa);
+      pessoa1.add(discente);
+      entityManager.persist(pessoa);
+    }
+```
+  **Instrução SQL gerada:**
+```sql
+    INSERT INTO Discente (id, matricula, pessoa) VALUES (5,12345,1);
+```
+ ---------------------------
 
 -   Utilizar a coleção `Set`: Caso não seja possível ou desejável ter
     uma relação bidirecional, sugere-se trocar o tipo da coleção para a
@@ -1045,29 +1135,35 @@ Existem duas formas possíveis de ajustar este *code smell*:
     representado pela entidade `Pessoa_Discente`, mas a instrução gerada
     pelo ORM é igualmente proporcional a alteração realizada nos
     objetos, inserindo apenas o novo registro.
+  
+  **Código Java:**
+```java
+    @Entity
+    class Pessoa{
+      ...
+      @OneToMany(cascade = CascadeType.ALL)
+      private %*\Hig{Set<Discente>}%* discentes = new HashSet<Discente>();	
+    }
+    @Entity
+    class Discente{
+      @Id
+      private Integer id;
+      private Integer matricula;
+    }
 
-        @Entity
-        class Pessoa{
-         ...
-         @OneToMany(cascade = CascadeType.ALL)
-         private %*\Hig{Set<Discente>}%* discentes = new HashSet<Discente>();	
-        }
-        @Entity
-        class Discente{
-         @Id
-         private Integer id;
-         private Integer matricula;
-        }
-
-        public static void main(String[] args) {
-         Pessoa pessoa = findById(1);
-         Discente discente = new Discente(5,12345);
-         pessoa1.add(discente);
-         entityManager.persist(pessoa);
-        }
-
-      **Instrução SQL gerada:**
-      ---------------------------
+    public static void main(String[] args) {
+      Pessoa pessoa = findById(1);
+      Discente discente = new Discente(5,12345);
+      pessoa1.add(discente);
+      entityManager.persist(pessoa);
+    }
+```
+  **Instrução SQL gerada:**
+```sql
+    INSERT INTO Discente (id, matricula) VALUES (5,12345);
+    INSERT INTO Pessoa_Discente (pessoa_id, discente_id) VALUES (1, 5);
+```
+  ---------------------------
 
 #### Detalhamento e Discussão
 
@@ -1155,14 +1251,16 @@ de consulta o objeto `Discente`, mas é recuperado no modo padrão <span
 style="font-variant:small-caps;">READ-WRITE</span> do JPA, mantendo o
 objeto de retorno `Discente` no contexto de persistência
 desnecessariamente.
-
+  
+  **Código Java:**
+```java
     public Discente findDiscenteById(Integer id){
      String hql = "FROM Discente d WHERE id = :id";
      Query q = entityManager.createQuery(hql.toString(), Discente.class);
      q.setInteger("id", id);
      return q.uniqueResult();
     }
-
+```
 #### Sugestão de Refatoração {#sugestão-de-refatoração-5}
 
 Existem diferentes configurações possíveis que podem ser utilizadas para
@@ -1176,7 +1274,7 @@ refatoração para o [Exemplo \[alg:somente\_leitura\_smell\]]{}, fazendo
 com que o objeto `Discente` não seja gerenciado pelo contexto de
 persistência. Na Seção \[sub:detalhamento\_somente\_leitura\] são
 detalhadas outras formas possíveis de configuração.
-
+```java
     public Discente findDiscenteById(Integer id){
      String hql = "FROM Discente d WHERE id = :id";
      Query q = entityManager.createQuery(hql.toString(), Discente.class);
@@ -1184,7 +1282,7 @@ detalhadas outras formas possíveis de configuração.
      %*\Hig{q.setHint("org.hibernate.readOnly", true)}%*
      return q.uniqueResult();
     }
-
+```
 #### Detalhamento e Discussão {#sub:detalhamento_somente_leitura}
 
 Recuperar entidades no modo somente leitura é mais eficiente do que
@@ -1209,22 +1307,22 @@ entidade, nível de sessão ou a nível de consulta:
     ser através da anotação `@Immutable` para o Hibernate (Mihalcea et
     al. 2018), conforme [Exemplo \[alg:utilizacao\_imutable\]]{}, ou
     anotação `@ReadyOnly` para o EclipseLink (EclipseLink 2017).
-
+```java
         @Entity(name = "parametros") @Immutable
         public static class Parametros {
          @Id
          private Long id;
          private String nome;}   
-
+```
 -   A nível de sessão: É possível transformar a sessão do
     `entityManager` em uma sessão que fará consultas somente leitura
     (Bauer, King, and Gregory 2016). O [Exemplo
     \[alg:utilizacao\_leitura\_sessao\]]{} demonstra a utilização no
     código fonte.
-
+```java
         Session session = entityManager.unwrap(Session.class);
         session.setDefaultReadOnly(true);
-
+```
 -   A nível de consulta: é possível definir na própria consulta ORM,
     também com distinções entre os *frameworks* ORM. Para o Hibernate, é
     possível realizar a consulta utilizando
