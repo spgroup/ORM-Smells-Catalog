@@ -1,3 +1,15 @@
+---
+address: Recife
+author:
+- SAMUEL BRISTOT LOLI
+bibliography: '/references/references.bib'
+date: 2020
+nocite: '[@*]'
+title: |
+    CODE SMELLS NO CONTEXTO DE MAPEAMENTO OBJETO-RELACIONAL EM PROJETOS
+    JAVA:
+---
+
 Catálogo de Code Smells ORM
 ===========================
 
@@ -29,106 +41,32 @@ descrição resumida do *code smell* ORM bem como exemplo prático;
 sugestão de refatoração, apresentando as melhores práticas encontradas
 nas revisões realizadas e um exemplo prático corrigindo o apresentado na
 descrição do *smell*; por fim, uma discussão e detalhamento referente ao
-*code smell* em questão. A Tabela \[tab:catalogo\] apresenta os oito
+*code smell* em questão. A Tabela abaixo apresenta os oito
 *code smells* ORM selecionados para o catálogo, contendo um breve resumo
 e categorizados por tipo de problema, seguidos pelas referências das
-evidências do RR e GLR (Tabela \[tab:resultado\_revisao\]) a partir dos
-quais os extraímos.
+evidências do RR e GLR a partir dos quais os extraímos.
 
-[ | m[0.95cm]{} | m[3.4cm]{} | m[4.2cm]{} | m[5.62cm]{} | ]{}
+![alt text](figures/catalogo_tabela.jpg?raw=true)
 
-**Tipo** & **Code Smell ORM** & **Referências da Revisão** & **Resumo**\
-& 1. <span style="font-variant:small-caps;">Eager como estratégia de
-busca nos relacionamentos a nível de classe</span> & [\[]{}RR01[\]]{},
-[\[]{}RR03[\]]{}, [\[]{}RR04[\]]{}, [\[]{}GLR02[\]]{},
-[\[]{}GLR03[\]]{}, [\[]{}GLR04[\]]{}, [\[]{}GLR05[\]]{},
-[\[]{}GLR07[\]]{}, [\[]{}GLR09[\]]{}, [\[]{}GLR10[\]]{},
-[\[]{}GLR11[\]]{}, [\[]{}GLR12[\]]{}, [\[]{}GLR13[\]]{},
-[\[]{}GLR14[\]]{}, [\[]{}GLR15[\]]{}, [\[]{}GLR16[\]]{},
-[\[]{}GLR17[\]]{}, [\[]{}GLR18[\]]{}. & Atributos que representam
-relacionamento mapeados com estratégia de busca <span
-style="font-variant:small-caps;">Eager</span> a nível de classe
-(estático) faz o objeto relacionado sempre ser carregado pelo ORM, mesmo
-quando não utilizado, sem poder alterar o comportamento a nível de
-consulta (dinâmico)\
-
-& 2. <span style="font-variant:small-caps;">Recuperação de dados sem
-projeção para somente leitura</span> & [\[]{}RR01[\]]{},
-[\[]{}GLR02[\]]{}, [\[]{}GLR03[\]]{}, [\[]{}GLR05[\]]{},
-[\[]{}GLR17[\]]{}. & Não utilização de projeção ou DTOs para recuperar
-somente os atributos desejados do banco de dados quando o resultado for
-utilizado apenas para leitura, faz com que sejam recuperados dados em
-excesso.\
-& 3. <span style="font-variant:small-caps;">Atualização desnecessária de
-toda a entidade</span> & [\[]{}RR01[\]]{}, [\[]{}RR02[\]]{},
-[\[]{}RR03[\]]{}. & Qualquer alteração de atributos na classe faz com
-que todas as colunas da entidade mapeada sejam atualizadas no banco de
-dados, quando seria necessário atualizar apenas as colunas dos atributos
-alterados.\
-
-& 4. <span style="font-variant:small-caps;">Falta de paginação quando
-não necessário todo o resultado</span> & [\[]{}GLR01[\]]{},
-[\[]{}GLR02[\]]{}, [\[]{}GLR05[\]]{}, [\[]{}GLR13[\]]{},
-[\[]{}GLR17[\]]{}. & Consultas que retornam coleção de dados sem a
-utilização dos parâmetros de paginação para limitar os resultados quando
-não utilizado todos os registros.\
-& 5. <span style="font-variant:small-caps;">Falta de Join Fetch:
-estratégia de busca Eager</span> & [\[]{}RR01[\]]{}, [\[]{}RR04[\]]{},
-[\[]{}GLR02[\]]{}, [\[]{}GLR04[\]]{}, [\[]{}GLR05[\]]{},
-[\[]{}GLR06[\]]{}, [\[]{}GLR07[\]]{}, [\[]{}GLR09[\]]{},
-[\[]{}GLR10[\]]{}, [\[]{}GLR11[\]]{}, [\[]{}GLR12[\]]{},
-[\[]{}GLR13[\]]{}, [\[]{}GLR14[\]]{}, [\[]{}GLR15[\]]{},
-[\[]{}GLR16[\]]{}, [\[]{}GLR17[\]]{}, [\[]{}GLR18[\]]{}. & Consultas ORM
-sem utilização de <span style="font-variant:small-caps;">JOIN
-FETCH</span> para os atributos que estão mapeados como <span
-style="font-variant:small-caps;">Eager</span> a nível de classe, gerando
-N consultas adicionais para carregar os objetos relacionados.
-
-\
-
-& 6. <span style="font-variant:small-caps;">Acesso um por um: estrutura
-de repetição e estratégia de busca Lazy</span> & [\[]{}RR03[\]]{},
-[\[]{}RR04[\]]{}, [\[]{}GLR01[\]]{}, [\[]{}GLR05[\]]{},
-[\[]{}GLR08[\]]{}, [\[]{}GLR10[\]]{}, [\[]{}GLR11[\]]{},
-[\[]{}GLR12[\]]{}, [\[]{}GLR13[\]]{}, [\[]{}GLR14[\]]{},
-[\[]{}GLR16[\]]{}, [\[]{}GLR19[\]]{}. & Ao recuperar um atributo de um
-objeto referente a uma entidade dentro de uma estrutura de repetição, se
-a estratégia de busca for <span
-style="font-variant:small-caps;">Lazy</span>, consultas adicionais serão
-executadas para cada iteração.\
-& 7. <span style="font-variant:small-caps;">@OneToMany unilateral com
-uso inadequado de coleções</span> & [\[]{}RR05[\]]{}, [\[]{}GLR07[\]]{},
-[\[]{}GLR15[\]]{}. & `@OneToMany` unilateral com uso inadequando de
-coleções Java faz com que a cada inserção/remoção de um elemento seja
-modificado todos os registros da coleção no banco de dados.\
-
-& 8. <span style="font-variant:small-caps;">Não uso de consultas somente
-leitura</span> & [\[]{}GLR01[\]]{}, [\[]{}GLR02[\]]{},
-[\[]{}GLR15[\]]{}. & Objetos recuperados da base de dados para fins
-únicos de consultas sem que possuam configurações para somente leitura,
-faz com que seja gerenciado pelo contexto de persistência
-desnecessariamente.\
-
-Dados em excesso {#dados_excesso}
+Dados em excesso 
 ----------------
 
-Segundo [@mlr15_hibernate_543], trazer dados em excesso do banco de
+Segundo (Mihalcea et al. 2018), trazer dados em excesso do banco de
 dados para a aplicação pode ser considerado o problema de desempenho
-número um na maioria das aplicações que utilizam JPA.
-[@Chen:2016:Redundant:Data] relata que o fato do ORM operar em um nível
-inferior (acesso a dados), não permite identificar quais dados serão
-utilizados no retorno e assim não fornece uma abordagem ideal de
-recuperação de dados para todos os casos, podendo gerar problemas de
-desempenho ao recuperar dados em excesso do banco de dados. A Figura
+número um na maioria das aplicações que utilizam JPA. (Chen, Shang,
+Jiang, et al. 2016) relata que o fato do ORM operar em um nível inferior
+(acesso a dados), não permite identificar quais dados serão utilizados
+no retorno e assim não fornece uma abordagem ideal de recuperação de
+dados para todos os casos, podendo gerar problemas de desempenho ao
+recuperar dados em excesso do banco de dados. A Figura
 \[fig:dados\_excesso\] apresenta um exemplo ao requerer apenas a
 matricula do objeto `discente`, a consulta gerada pelo *framework* ORM
 busca mais informações que a desejada no banco de dados. A seguir são
 apresentados os *code smells* relacionados a este problema.
 
-![](figures/dadosExcesso.png "fig:"){width="\linewidth"}
-\[fig:dados\_excesso\]
+![](figures/dadosExcesso.png "fig:")
 
-### Eager como estratégia de busca nos relacionamentos a nível de classe (estático) {#subsection:EAGER_ESTATICO}
+### Eager como estratégia de busca nos relacionamentos a nível de classe (estático) 
 
 #### Descrição do *Smell*
 
@@ -148,20 +86,20 @@ tipo <span style="font-variant:small-caps;">Eager</span>. O objetivo do
 código é recuperar apenas a matrícula de um discente, porém recupera
 também a entidade `Pessoa` sem necessidade através de <span
 style="font-variant:small-caps;">JOIN</span>.
-
+```java
     @Entity
     class Discente{
-     @ManyToOne(fetch = FetchType.EAGER)
-     private Pessoa pessoa;	
-     ...
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Pessoa pessoa;	
+    ...
     }
 
     public static void main(String[] args) {
-     ...
-     Discente d = findDiscenteById(1);
-     d.getMatricula();
+    ...
+    Discente d = findDiscenteById(1);
+    d.getMatricula();
     }
-
+```
   **Instrução SQL gerada:**
   ---------------------------
 
@@ -181,7 +119,7 @@ negócio de forma a evitar consultas adicionais, deve ser realizado o
 tratamento em nível de consulta, realizando <span
 style="font-variant:small-caps;">JOIN FETCH</span> na consulta para a
 regra de negócio ou através da anotação `@NamedEntityGraph` introduzida
-no JPA 2.1[^8] que permite definir um grafo de entidades a serem
+no JPA 2.1[^1] que permite definir um grafo de entidades a serem
 recuperadas no banco de dados. O [Exemplo
 \[alg:eager\_smell\_refactory\]]{} apresenta a refatoração do [Exemplo
 \[alg:eager\_smell\]]{}, alterando a estratégia de busca para <span
@@ -216,12 +154,12 @@ forma a sempre carregar o objeto relacionado. Por exemplo: objeto A
 possui um atributo relacionado ao objeto B. Utilizando <span
 style="font-variant:small-caps;">Eager</span>, sempre que qualquer
 atributo do objeto A for carregado, o objeto B também será, independente
-se alguma informação do objeto B será utilizada. [@bauer2005hibernate]
+se alguma informação do objeto B será utilizada. (Bauer and King 2005)
 
 Segundo a documentação oficial do Hibernate, a utilização da estratégia
 de busca do tipo <span style="font-variant:small-caps;">Eager</span> de
 forma estática (definida a nível de classe) é quase sempre uma má
-escolha [@mlr15_hibernate_543]. Esta estratégia é considerando um *code
+escolha (Mihalcea et al. 2018). Esta estratégia é considerando um *code
 smell* ORM devido aos seguintes riscos:
 
 -   Os dados do objeto relacionado sempre serão carregados por completo,
@@ -230,14 +168,14 @@ smell* ORM devido aos seguintes riscos:
     objeto relacionado. O problema pode se agravar caso o objeto
     relacionado também esteja com outros objetos associados utilizando
     <span style="font-variant:small-caps;">Eager</span>, gerando mais
-    consultas desnecessárias. [@Chen:2014:Performance:Anti-patterns];
+    consultas desnecessárias. (Chen et al. 2014);
 
 -   Se durante uma consulta ORM não for realizado o <span
     style="font-variant:small-caps;">JOIN FETCH</span> para todas os
     relacionamentos anotados como <span
     style="font-variant:small-caps;">Eager</span>, será realizada uma
     sub-consulta para cada relacionamento, podendo gerar o problema do
-    $N+1$ [@mlr15_hibernate_543].
+    $N+1$ (Mihalcea et al. 2018).
 
 -   Ao definir um relacionamento na classe para <span
     style="font-variant:small-caps;">Eager</span> não poderá
@@ -247,26 +185,26 @@ smell* ORM devido aos seguintes riscos:
     style="font-variant:small-caps;">Lazy</span> para <span
     style="font-variant:small-caps;">Eager</span>) é possível utilizando
     <span style="font-variant:small-caps;">JOIN FETCH</span> na consulta
-    [@mlr1_eclipslink].
+    (Mihalcea 2017).
 
-[@Chen:2014:Performance:Anti-patterns] relata que após realizada a
-refatoração alterando a estratégia de busca de <span
+(Chen et al. 2014) relata que após realizada a refatoração alterando a
+estratégia de busca de <span
 style="font-variant:small-caps;">Eager</span> para <span
 style="font-variant:small-caps;">Lazy</span> em uma classe com 300
 registros associada a outra com 10 registros, houve um aumento de 71% de
 desempenho. Para um dos autores responsáveis pela documentação do
-Hibernate, [@mlr2_vlad_mihalcea_2019] a estratégia de busca <span
+Hibernate, (Vlad Mihalcea 2019a) a estratégia de busca <span
 style="font-variant:small-caps;">Eager</span> definida de forma estática
 é um *code smell*. Na maioria das vezes é utilizado pelo desenvolvedor
 para simplificar o desenvolvimento, porém não são considerados os
 problemas de desempenho e manutenibilidade a longo prazo.
 
-Apesar da documentação oficial da versão 5 do Hibernate
-[@mlr15_hibernate_543] e da documentação oficial do EclipseLink
-[@mlr9_toplink_perfomance] recomendar a não utilização, atualmente <span
+Apesar da documentação oficial da versão 5 do Hibernate (Mihalcea et al.
+2018) e da documentação oficial do EclipseLink (Oracle 2015) recomendar
+a não utilização, atualmente <span
 style="font-variant:small-caps;">Eager</span> é a estratégia de busca
 padrão para mapeamentos do tipo `ManyToOne` e `OneToOne` nos
-*frameworks* ORM em Java. O motivo, segundo [@mlr15_hibernate_543], é a
+*frameworks* ORM em Java. O motivo, segundo (Mihalcea et al. 2018), é a
 implementação do JPA. Antes da especificação JPA, o Hibernate por
 exemplo definia todos os seus mapeamentos com a estratégia de busca
 <span style="font-variant:small-caps;">Lazy</span> por padrão. Com o
@@ -280,9 +218,9 @@ suas documentações oficiais que os mapeamentos do tipo `ManyToOne` e
 `OneToOne` devem ser explicitamente definidos como <span
 style="font-variant:small-caps;">Lazy</span>. As demais estratégias de
 busca são <span style="font-variant:small-caps;">Lazy</span> por padrão.
-[@Chen:2016:Redundant:Data] relata que relacionamentos `ManyToOne` e
-`OneToOne` apesar de representar um relacionamento de associação única,
-podem gerar grandes problemas de desempenho utilizando <span
+(Chen, Shang, Jiang, et al. 2016) relata que relacionamentos `ManyToOne`
+e `OneToOne` apesar de representar um relacionamento de associação
+única, podem gerar grandes problemas de desempenho utilizando <span
 style="font-variant:small-caps;">Eager</span> quando o objeto recuperado
 contém grandes dados (por exemplo, binários ou imagens) ou o objeto
 recuperado também recupera de forma <span
@@ -295,7 +233,7 @@ style="font-variant:small-caps;">Eager</span>. Com essa estratégia, a
 consulta pode exigir um produto cartesiano limitando a velocidade da
 consulta a quantidade de registros associados, ou gerando o problema de
 $N+1$ (o qual será visto na próxima seção) com $N$ consultas adicionais
-[@high_perform_vlad].
+(V. Mihalcea 2016).
 
 Com base no exposto, consideramos um *code smell* a utilização da
 estratégia de busca <span style="font-variant:small-caps;">Eager</span>
@@ -397,13 +335,13 @@ necessários posteriormente, trazendo todas as colunas da entidade e seus
 relacionamentos (dependendo da estratégia de busca). Essa prática pode
 recuperar colunas que contenham informações grandes do banco de dados
 (como uma imagem), ou muitos relacionamentos gerando um processamento
-desnecessário pelo banco e pela aplicação [@Chen:2016:Redundant:Data].
-Se for necessário atualizar os dados posterior a recuperação, é
+desnecessário pelo banco e pela aplicação (Chen, Shang, Jiang, et al.
+2016). Se for necessário atualizar os dados posterior a recuperação, é
 importante buscar a entidade completa para ser gerenciada pelo
 *framework* ORM, isso devido ao chamado *mecanismo de verificação suja*,
-conforme discutido na Seção \[jpa-secao\] [@mlr15_hibernate_543].
+conforme discutido na Seção \[jpa-secao\] (Mihalcea et al. 2018).
 
-No entendimento de [@mlr15_hibernate_543], se o objetivo for recuperar
+No entendimento de (Mihalcea et al. 2018), se o objetivo for recuperar
 informações somente leitura, é recomendável utilizar manipulando somente
 os atributos desejados para o caso de uso. Essa estratégia traz alguns
 benefícios, como reduzir a carga no contexto de persistência em execução
@@ -414,12 +352,11 @@ na entidade sejam carregados.
 
 Analisando o exposto até então, poderia-se sugerir como recomendação de
 refatoração o uso de s. Todavia, o uso do padrão para este contexto não
-é um consenso. Apesar das vantagens dessa abordagem, para
-[@bauer2005hibernate] utilizar s com objetivo de recuperar informação do
-banco de dados ao invés da própria entidade poderia causar outras
-situações indesejadas. Segundo o autor, o uso do padrão , neste
-contexto, poderia adicionar dois *code smells* elencados por
-[@Martinfowler2018refactoring]:
+é um consenso. Apesar das vantagens dessa abordagem, para (Bauer and
+King 2005) utilizar s com objetivo de recuperar informação do banco de
+dados ao invés da própria entidade poderia causar outras situações
+indesejadas. Segundo o autor, o uso do padrão , neste contexto, poderia
+adicionar dois *code smells* elencados por (Fowler 2018):
 
 -   *Shotgun change smell*: Uma pequena alteração em alguma parte do
     código requer alterações em várias classes. No caso do , se a classe
@@ -434,7 +371,7 @@ contexto, poderia adicionar dois *code smells* elencados por
 
 Entretanto, ao analisar apenas o aspecto de desempenho, o pode
 apresentar uma superioridade por não ser gerenciado pelo contexto do
-JPA. Segundo [@thorbenJanssen], o fato das entidades serem gerenciadas
+JPA. Segundo (Janssen 2019a), o fato das entidades serem gerenciadas
 pelo JPA faz com que sejam armazenadas no cache de primeiro nível. Isso
 evita instruções repetidas e otimiza gravações no banco de dados. Porém,
 o gerenciamento de cache de primeiro nível leva tempo e pode ser um
@@ -535,14 +472,13 @@ distinção dependendo do *framework* ORM utilizado. Utilizando o
 Hibernate, é atualizado o objeto inteiro por padrão, mesmo que a
 atualização seja realizada apenas em um atributo. Isso ocasiona
 processamento desnecessário ao banco de dados, principalmente em
-entidades fortemente indexadas e com grande número de colunas
-[@Chen:2016:Redundant:Data]. O mesmo não se aplica ao padrão do
+entidades fortemente indexadas e com grande número de colunas (Chen,
+Shang, Jiang, et al. 2016). O mesmo não se aplica ao padrão do
 EclipseLink, que realiza a atualização somente dos campos modificados.
 No EclipseLink a atualização de todos os campos somente será realizada
-de forma explicita pelo programador através de SQL ou JPQL
-[@eclipselinkmigration]. Porém, para [@mlr15_hibernate_543], o fato do
-Hibernate realizar a atualização com todos os atributos possui algumas
-vantagens:
+de forma explicita pelo programador através de SQL ou JPQL (EclipseLink
+2017). Porém, para (Mihalcea et al. 2018), o fato do Hibernate realizar
+a atualização com todos os atributos possui algumas vantagens:
 
 -   Permite que sejam utilizados recursos de cache;
 
@@ -551,11 +487,11 @@ vantagens:
 
 Mesmo com estes fatores, quando a entidade possui índices não
 clusterizados, os quais o banco de dados poderá atualizá-los de forma
-redundante, recomenda-se não atualizar todos os campos
-[@Chen_Emparical_Study]. Para isso, o Hibernate disponibiliza uma
-anotação a nível de classe chamada `@DynamicUpdate`. Esta anotação faz
-com que sempre seja atualizado apenas o campo alterado na entidade
-representada pela classe [@mlr15_hibernate_543].
+redundante, recomenda-se não atualizar todos os campos (Chen, Shang,
+Yang, et al. 2016). Para isso, o Hibernate disponibiliza uma anotação a
+nível de classe chamada `@DynamicUpdate`. Esta anotação faz com que
+sempre seja atualizado apenas o campo alterado na entidade representada
+pela classe (Mihalcea et al. 2018).
 
 Com base no exposto, podemos considerar *code smell* quando possuir as
 seguintes premissas: o *framework* ORM em uso utiliza a atualização de
@@ -627,15 +563,14 @@ visão, evitando problemas de desempenho com o crescimento dos dados.
 
 #### Detalhamento e Discussão
 
-Segundo [@mlr2_vlad_mihalcea_2019] para obter o melhor resultado nas
+Segundo (Vlad Mihalcea 2019a) para obter o melhor resultado nas
 instruções SQL geradas pelo ORM, é importante não apenas considerar o
 número de colunas, consultas e junções realizados, mas também o número
 de registros que esta sendo recuperado do banco de dados. Para recuperar
 apenas um conjunto específico de dados, é possível configurar elementos
 como a paginação especificando um limite para quantidade de registros na
-execução de uma consulta [@mlr1_eclipslink] através dos seguintes
-métodos disponibilizados pela especificação JPA
-[@mlr5_perform_improvment]:
+execução de uma consulta (Mihalcea 2017) através dos seguintes métodos
+disponibilizados pela especificação JPA (Gomes 2016):
 
 -   `setFirstResult(int)`: Parâmetro utilizado para especificar o
     deslocamento;
@@ -644,17 +579,17 @@ métodos disponibilizados pela especificação JPA
 
 Na camada de visualização, as informações geralmente são apresentadas ao
 usuário em um formulário paginado, apresentando uma relação natural com
-a parametrização referente a paginação de dados ORM
-[@mlr13_JPA_otimizando]. Exemplo: Uma entidade possui 1.000.000
-registros. Em uma pagina web é apresentado um subconjunto de informações
-exibindo 100 registros. Portanto os parâmetros `setFirstResult(1)` e
-`setMaxResults(100)` devem ser utilizados para recuperar apenas os
-registros utilizados. Outro agravante em não utilizar a paginação, é que
-os dados tendem a crescer com o tempo [@mlr2_vlad_mihalcea_2019]. Em um
-primeiro momento pode não apresentar problemas de desempenho mas com o
-aumento de dados pode se tornar um grande problema. Também dificulta a
-manutenção do código, pois o ajuste implica em alterações na estrutura
-dos métodos conforme [Exemplo \[alg:paginacao\_smell\_refactory\]]{}.
+a parametrização referente a paginação de dados ORM (Medeiros 2015).
+Exemplo: Uma entidade possui 1.000.000 registros. Em uma pagina web é
+apresentado um subconjunto de informações exibindo 100 registros.
+Portanto os parâmetros `setFirstResult(1)` e `setMaxResults(100)` devem
+ser utilizados para recuperar apenas os registros utilizados. Outro
+agravante em não utilizar a paginação, é que os dados tendem a crescer
+com o tempo (Vlad Mihalcea 2019a). Em um primeiro momento pode não
+apresentar problemas de desempenho mas com o aumento de dados pode se
+tornar um grande problema. Também dificulta a manutenção do código, pois
+o ajuste implica em alterações na estrutura dos métodos conforme
+[Exemplo \[alg:paginacao\_smell\_refactory\]]{}.
 
 Com base no exposto, podemos considerar um *code smell* ORM a não
 utilização de paginação em coleções de dados quando os registros
@@ -674,8 +609,8 @@ ORM pode precisar realizar mais consultas a partir de uma consulta para
 completar a informação de seus relacionamentos e montar o objeto
 desejado e seus relacionamentos. Essa ação pode causar um problema de
 desempenho dependendo da quantidade de consultas que são realizadas para
-completar a operação [@vlad_mihalcea_n1]. Esse problema é conhecido como
-$N+1$, quando a partir de uma instrução ORM são geradas <span
+completar a operação (Vlad Mihalcea 2019d). Esse problema é conhecido
+como $N+1$, quando a partir de uma instrução ORM são geradas <span
 style="font-variant:small-caps;">N</span> outras, sendo apresentado no
 Capítulo \[chap:intro\] como exemplo motivacional desta pequisa. A
 Figura \[fig:n1-representacao\] apresenta um exemplo no qual ao
@@ -782,24 +717,22 @@ e seja complexo a refatoração no código ao alterar a estratégia de busca
 style="font-variant:small-caps;">Lazy</span>) na classe devido a
 dependências, é necessário utilizar a cláusula <span
 style="font-variant:small-caps;">JOIN FETCH</span> para todos os
-atributos do EAGER para evitar o problema N + 1
-[@mlr2_vlad_mihalcea_2019]. O problema de dependência mencionado ocorre
-quando o código existente espera que o objeto relacionado já esteja
-carregado. A alteração para <span
-style="font-variant:small-caps;">Lazy</span> pode causar exceções, como
-`LAZYInitializationException` no caso do Hibernate
-[@mlr15_hibernate_543]. Existem opções boas e ruins de tratar essa
-exceção. Utilizar o padrão *Open Session in View* ou ativar a opção
+atributos do EAGER para evitar o problema N + 1 (Vlad Mihalcea 2019a). O
+problema de dependência mencionado ocorre quando o código existente
+espera que o objeto relacionado já esteja carregado. A alteração para
+<span style="font-variant:small-caps;">Lazy</span> pode causar exceções,
+como `LAZYInitializationException` no caso do Hibernate (Mihalcea et al.
+2018). Existem opções boas e ruins de tratar essa exceção. Utilizar o
+padrão *Open Session in View* ou ativar a opção
 `hibernate.enable_lazy_load_no_trans` são consideradas anti-padrões e
-portanto opções ruins para evitar a exceção
-[@vlad_mihalcea_lazyInitialization]. Esses são considerados anti-padrões
-pois tratam apenas os sintomas e não resolvem a causa real do problema
- [@vlad_mihalcea_enable_lazy_load]. A melhor opção, nesse caso, é buscar
-todos os relacionamentos necessários antes de fechar o contexto de
-persistência por meio da cláusula <span
-style="font-variant:small-caps;">JOIN FETCH</span>
-[@mlr15_hibernate_543]. Por esse motivo, para evitar o $N+1$, a solução
-recomendada quando não possível realizar a refatoração de <span
+portanto opções ruins para evitar a exceção (Vlad Mihalcea 2020b). Esses
+são considerados anti-padrões pois tratam apenas os sintomas e não
+resolvem a causa real do problema  (Vlad Mihalcea 2019c). A melhor
+opção, nesse caso, é buscar todos os relacionamentos necessários antes
+de fechar o contexto de persistência por meio da cláusula <span
+style="font-variant:small-caps;">JOIN FETCH</span> (Mihalcea et al.
+2018). Por esse motivo, para evitar o $N+1$, a solução recomendada
+quando não possível realizar a refatoração de <span
 style="font-variant:small-caps;">Eager</span> para <span
 style="font-variant:small-caps;">Lazy</span> é utilizar <span
 style="font-variant:small-caps;">JOIN FETCH</span> nas consultas ORM
@@ -808,23 +741,22 @@ conforme recomendado na Seção \[subsection:refat\].
 Com relação a refatoração apresentada utilizando <span
 style="font-variant:small-caps;">JOIN FETCH</span> é necessário um
 cuidado e testes após alteração, pois dependendo do contexto o número de
-junções também pode afetar o desempenho [@bauer2016java], cabendo uma
-análise do desenvolvedor para avaliar qual a melhor opção. Existem
-diferenças entre realizar um <span
+junções também pode afetar o desempenho (Bauer, King, and Gregory 2016),
+cabendo uma análise do desenvolvedor para avaliar qual a melhor opção.
+Existem diferenças entre realizar um <span
 style="font-variant:small-caps;">JOIN</span> comum e um <span
-style="font-variant:small-caps;">JOIN FETCH</span>. Segundo
-[@mlr3_tips_to_boost] a palavra <span
-style="font-variant:small-caps;">FETCH</span> da instrução <span
-style="font-variant:small-caps;">JOIN FETCH</span> é específica da JPA.
-Ela informa ao provedor de persistência para inicializar também a
-associação no objeto recuperado e não somente realizar a junção entre as
-duas entidades. Para exemplificar de forma prática o exposto até o
-momento, no capítulo \[chap:intro\] utilizamos como motivação desta
-pesquisa um problema ocasionado pelo HQL do [Exemplo \[alg:java\]]{}, e
-pelo mapeamento realizado no [Exemplo \[alg:sig\_eager\]]{}, que gerava
-o problema $N+1$ no sistema do . Foram realizadas duas refatorações que
-são detalhadas nesta seção utilizando as formas descritas no parágrafo
-anterior:
+style="font-variant:small-caps;">JOIN FETCH</span>. Segundo (Janssen
+2020) a palavra <span style="font-variant:small-caps;">FETCH</span> da
+instrução <span style="font-variant:small-caps;">JOIN FETCH</span> é
+específica da JPA. Ela informa ao provedor de persistência para
+inicializar também a associação no objeto recuperado e não somente
+realizar a junção entre as duas entidades. Para exemplificar de forma
+prática o exposto até o momento, no capítulo \[chap:intro\] utilizamos
+como motivação desta pesquisa um problema ocasionado pelo HQL do
+[Exemplo \[alg:java\]]{}, e pelo mapeamento realizado no [Exemplo
+\[alg:sig\_eager\]]{}, que gerava o problema $N+1$ no sistema do . Foram
+realizadas duas refatorações que são detalhadas nesta seção utilizando
+as formas descritas no parágrafo anterior:
 
 -   Refatoração 1 - Ajuste das $N$ consultas na entidade `Pessoa`: Uma
     das soluções possíveis seria alterar as estratégias de busca do tipo
@@ -986,23 +918,23 @@ Por motivos de desempenho, conforme exposto na Seção
 \[fetchtypePadrao\], a especificação JPA utiliza as coleções
 `@OneToMany` e `@ManyToMany` com estratégia de busca <span
 style="font-variant:small-caps;">Lazy</span> por padrão. Isso significa,
-segundo [@mlr11_avoid_jpa_performance], que o contexto de persistência
-não carregará a entidade de relacionamento até que uma chamada seja
-feita pelo código. Entretanto, quando o código solicita os dados, a
-transação já foi encerrada. Sem a possibilidade de junção, o *framework*
-ORM realiza consultas adicionais para recuperar a informação
-[@mlr15_hibernate_543], o que em uma estrutura de repetição gera um
-número de consultas em excesso prejudicando o desempenho do sistema.
-Conforme [@mlr10_n1_spring], uma das estratégias de correção muito
-utilizada e facilmente encontrada no StackOverFlow é a alteração para a
-estratégia de busca <span style="font-variant:small-caps;">Eager</span>
-a nível de classe. Porém, esta resolução substitui um problema por
-outro, mostrando a dificuldade de manutenção causada pelo *smell*.
-Conforme comentado na Seção \[subsection:EAGER\_ESTATICO\], utilizar
-<span style="font-variant:small-caps;">Eager</span> a nível de classe
-poderá gerar o problema de dados em excesso, carregando mais dados do
-que o necessário, sendo uma melhor estratégia seguir as refatorações
-sugeridas na Seção \[refatoracao\_lazy\].
+segundo (Hut 2015), que o contexto de persistência não carregará a
+entidade de relacionamento até que uma chamada seja feita pelo código.
+Entretanto, quando o código solicita os dados, a transação já foi
+encerrada. Sem a possibilidade de junção, o *framework* ORM realiza
+consultas adicionais para recuperar a informação (Mihalcea et al. 2018),
+o que em uma estrutura de repetição gera um número de consultas em
+excesso prejudicando o desempenho do sistema. Conforme (Marciniec 2019),
+uma das estratégias de correção muito utilizada e facilmente encontrada
+no StackOverFlow é a alteração para a estratégia de busca <span
+style="font-variant:small-caps;">Eager</span> a nível de classe. Porém,
+esta resolução substitui um problema por outro, mostrando a dificuldade
+de manutenção causada pelo *smell*. Conforme comentado na Seção
+\[subsection:EAGER\_ESTATICO\], utilizar <span
+style="font-variant:small-caps;">Eager</span> a nível de classe poderá
+gerar o problema de dados em excesso, carregando mais dados do que o
+necessário, sendo uma melhor estratégia seguir as refatorações sugeridas
+na Seção \[refatoracao\_lazy\].
 
 Podemos concluir que o acesso um por um utilizando uma estrutura de
 repetição com a estratégia de busca do tipo <span
@@ -1063,10 +995,10 @@ Existem duas formas possíveis de ajustar este *code smell*:
     transformar a relação em bidirecional, adicionando um atributo
     relacionado ao objeto no outro lado da relação com a anotação
     `@ManyToOne` informando o atributo da relação com o parâmetro
-    `mappedBy` no `@OneToMany` [@mlr7_hibernate_performance]. Assim,
-    segundo [@mlr15_hibernate_543] o *framework* ORM irá utilizar o lado
-    com a anotação `@ManyToOne` da relação bidirecional sempre que um
-    dos lados forem manipulados. O [Exemplo
+    `mappedBy` no `@OneToMany` (Vlad Mihalcea 2016a). Assim, segundo
+    (Mihalcea et al. 2018) o *framework* ORM irá utilizar o lado com a
+    anotação `@ManyToOne` da relação bidirecional sempre que um dos
+    lados forem manipulados. O [Exemplo
     \[alg:onetomany\_smell\_refactory1\]]{} demonstra o ajuste realizado
     no [Exemplo \[alg:onetomany\_smell\]]{}, adicionando a anotação
     `@ManyToOne`, o atributo responsável pelo relacionamento na classe
@@ -1139,8 +1071,8 @@ Existem duas formas possíveis de ajustar este *code smell*:
 
 #### Detalhamento e Discussão
 
-De acordo com [@antipatterns_of_one_to_many], a anotação `@OneToMany` em
-JPA utilizada no lado proprietário (ou seja, unidirecional de forma a
+De acordo com (Węgrzynowicz 2013), a anotação `@OneToMany` em JPA
+utilizada no lado proprietário (ou seja, unidirecional de forma a
 gerenciar a persistência) é uma das formas mais comuns de representar
 associações um-para-muitos entre classes que representam entidades
 persistentes. A Tabela \[tab:onetomany1\] apresenta três semânticas de
@@ -1159,7 +1091,7 @@ Semântica `Set` & `java.util.Set` & `@OneToMany`\
 O número e o tipo de instrução executada pelo ORM muda de acordo com a
 semântica utilizada. A Tabela \[tab:onetomany2\] demonstra o número de
 instruções geradas ao persistir uma coleção após uma inserção ou remoção
-dada a semântica utilizada. [@antipatterns_of_one_to_many]
+dada a semântica utilizada. (Węgrzynowicz 2013)
 
 [|m[3cm]{}|m[5cm]{}|m[6cm]{}|]{} **Semânticas & **Adicionando um
 elemento & **Removendo um elemento\
@@ -1169,7 +1101,7 @@ atualizações\
 Semântica `Set` & 1 inserção & 1 remoção\
 ******
 
-Segundo [@mlr7_hibernate_performance], a utilização do tipo `Set` para
+Segundo (Vlad Mihalcea 2016a), a utilização do tipo `Set` para
 representar uma coleção unilateral é a forma mais eficiente, seguido
 pelo tipo `List` com anotações de ordenação (`@IndexColumn` ou
 `@OrderColumn`), enquanto tipos da semântica `Bag` representadas por
@@ -1182,15 +1114,15 @@ na entidade. A utilização de `Set` de acordo com a tabela
 \[tab:onetomany2\] demonstra ser mais eficiente, pois uma operação na
 coleção requer apenas uma única instrução no banco de dados evitando o
 <span style="font-variant:small-caps;">N+1</span>. Entretanto, para
-[@antipatterns_of_one_to_many] ela não é uma exclusividade e existem
-alguns casos em que utilizar outros tipos pode ser mais eficaz. Como o
-uso de `Set` em Java requer uma verificação de exclusividade nos
-elementos, no caso de qualquer inserção de novos elementos, todos os
-elementos da coleção devem ser carregados na memória principal. Sendo
-assim, casos em que a coleção na maioria das vezes é fortemente
-modificada com muitas alterações de uma vez, a utilização da semântica
-`Bag` ou `List` pode se tornar mais eficaz. Porém, para a maioria dos
-casos `Set` é mais eficiente.
+(Węgrzynowicz 2013) ela não é uma exclusividade e existem alguns casos
+em que utilizar outros tipos pode ser mais eficaz. Como o uso de `Set`
+em Java requer uma verificação de exclusividade nos elementos, no caso
+de qualquer inserção de novos elementos, todos os elementos da coleção
+devem ser carregados na memória principal. Sendo assim, casos em que a
+coleção na maioria das vezes é fortemente modificada com muitas
+alterações de uma vez, a utilização da semântica `Bag` ou `List` pode se
+tornar mais eficaz. Porém, para a maioria dos casos `Set` é mais
+eficiente.
 
 A utilização de coleções em relacionamentos `@OneToMany` unilaterais que
 utilizam a semântica `Bag` ou `List` (conforme Tabela
@@ -1256,7 +1188,7 @@ detalhadas outras formas possíveis de configuração.
 #### Detalhamento e Discussão {#sub:detalhamento_somente_leitura}
 
 Recuperar entidades no modo somente leitura é mais eficiente do que
-buscar entidades em modo de leitura e gravação [@mlr15_hibernate_543]. É
+buscar entidades em modo de leitura e gravação (Mihalcea et al. 2018). É
 possível informar ao *framework* ORM que determinada consulta é do tipo
 somente leitura para consultas que retornam objetos representativos de
 entidades no banco de dados e que não serão modificados posteriormente.
@@ -1267,17 +1199,16 @@ atualização (<span style="font-variant:small-caps;">SQL UPDATE</span>).
 Ao definir que uma consulta é somente leitura, o estado do objeto não
 será gerenciado pelo *framework* ORM e, dessa forma, não necessita
 detectar modificações na entidade representada pelo objeto. Além disso,
-as entidades somente leituras são ignoradas durante o `flush`
-[@mlr2_vlad_mihalcea_2019]. As configurações podem ser realizadas a
-nível de entidade, nível de sessão ou a nível de consulta:
+as entidades somente leituras são ignoradas durante o `flush` (Vlad
+Mihalcea 2019a). As configurações podem ser realizadas a nível de
+entidade, nível de sessão ou a nível de consulta:
 
 -   A nível de entidade: permite que a entidade ou a coleção da entidade
     seja do tipo somente leitura. Qualquer tentativa de salvar nova
-    informação na base será lançada uma exceção
-    [@thobernJanssenHibernateTips]. Pode ser através da anotação
-    `@Immutable` para o Hibernate [@mlr15_hibernate_543], conforme
-    [Exemplo \[alg:utilizacao\_imutable\]]{}, ou anotação `@ReadyOnly`
-    para o EclipseLink [@eclipselinkmigration].
+    informação na base será lançada uma exceção (Janssen 2017a). Pode
+    ser através da anotação `@Immutable` para o Hibernate (Mihalcea et
+    al. 2018), conforme [Exemplo \[alg:utilizacao\_imutable\]]{}, ou
+    anotação `@ReadyOnly` para o EclipseLink (EclipseLink 2017).
 
         @Entity(name = "parametros") @Immutable
         public static class Parametros {
@@ -1287,8 +1218,9 @@ nível de entidade, nível de sessão ou a nível de consulta:
 
 -   A nível de sessão: É possível transformar a sessão do
     `entityManager` em uma sessão que fará consultas somente leitura
-    [@bauer2016java]. O [Exemplo \[alg:utilizacao\_leitura\_sessao\]]{}
-    demonstra a utilização no código fonte.
+    (Bauer, King, and Gregory 2016). O [Exemplo
+    \[alg:utilizacao\_leitura\_sessao\]]{} demonstra a utilização no
+    código fonte.
 
         Session session = entityManager.unwrap(Session.class);
         session.setDefaultReadOnly(true);
@@ -1306,3 +1238,800 @@ um *code smell* ORM. Manter o objeto gerenciado pelo *framework* ORM
 desnecessariamente pode ser considerado um *code smell* ORM por indicar
 uma possibilidade de refatoração por questões de desperdício de recurso
 computacional.
+
+<div id="refs" class="references">
+
+<div id="ref-mlr16_jpa_tips">
+
+Ahmed, Sayem. 2018. “JPA Tips: Avoiding the N + 1 Select Problem.”
+Disponível em: [
+		https://www.javacodegeeks.com/2018/04/jpa-tips-avoiding-the-n-1-select-problem.html](
+		https://www.javacodegeeks.com/2018/04/jpa-tips-avoiding-the-n-1-select-problem.html).
+
+</div>
+
+<div id="ref-aniche2018code">
+
+Aniche, Maurício, Gabriele Bavota, Christoph Treude, Marco Aurélio
+Gerosa, and Arie van Deursen. 2018a. “Code Smells for
+Model-View-Controller Architectures.” *Empirical Software Engineering*.
+Springer.
+
+</div>
+
+<div id="ref-Aniche2018">
+
+———. 2018b. “Code Smells for Model-View-Controller Architectures.”
+*Empirical Software Engineering* 23 (4): 2121–57.
+doi:[10.1007/s10664-017-9540-2](https://doi.org/10.1007/s10664-017-9540-2).
+
+</div>
+
+<div id="ref-4602670">
+
+Ayewah, N., W. Pugh, D. Hovemeyer, J. D. Morgenthaler, and J. Penix.
+2008. “Using Static Analysis to Find Bugs.” *IEEE Software* 25 (5):
+22–29. doi:[10.1109/MS.2008.130](https://doi.org/10.1109/MS.2008.130).
+
+</div>
+
+<div id="ref-1998">
+
+Barry, D., and T. Stanienda. 1998. “Solving the Java Object Storage
+Problem.” *Computer* 31 (11): 33–40.
+doi:[10.1109/2.730734](https://doi.org/10.1109/2.730734).
+
+</div>
+
+<div id="ref-bauer2005hibernate">
+
+Bauer, C., and G. King. 2005. *Hibernate in Action*. In Action Series.
+Manning. <https://books.google.com.br/books?id=WCmSQgAACAAJ>.
+
+</div>
+
+<div id="ref-bauer2016java">
+
+Bauer, Christian, Gavin King, and Gary Gregory. 2016. *Java Persistence
+with Hibernate*. Manning Publications Co.
+
+</div>
+
+<div id="ref-unity">
+
+Borrelli, Antonio, Vittoria Nardone, Giuseppe A. Di Lucca, Gerardo
+Canfora, and Massimiliano Di Penta. 2020. “Detecting Video Game-Specific
+Bad Smells in Unity Projects.” In *17th International Conference on
+Mining Software Repositories (Msr ’20)*. Seoul, Republic of Korea:
+Association for Computing Machinery.
+
+</div>
+
+<div id="ref-badsmellpadroesprojeto">
+
+Bouhours, Cédric, Hervé Leblanc, and Christian Percebois. 2009. “Bad
+smells in design and design patterns.” *The Journal of Object
+Technology* 8 (3). Chair of Software Engineering: 43–63.
+<https://hal.archives-ouvertes.fr/hal-00522587>.
+
+</div>
+
+<div id="ref-rapidBruno">
+
+Cartaxo, Bruno, Gustavo Pinto, and Sergio Soares. 2018. “The Role of
+Rapid Reviews in Supporting Decision-Making in Software Engineering
+Practice.” In *Proceedings of the 22nd International Conference on
+Evaluation and Assessment in Software Engineering 2018*, 24–34. EASE’18.
+New York, NY, USA: Association for Computing Machinery.
+doi:[10.1145/3210459.3210462](https://doi.org/10.1145/3210459.3210462).
+
+</div>
+
+<div id="ref-Cartaxo2020rapidreviews">
+
+———. 2020. “Contemporary Empirical Methods in Software Engineering.” In,
+first. Springer.
+
+</div>
+
+<div id="ref-evidence_briefing">
+
+Cartaxo, Bruno, Gustavo Pinto, Elton Vieira, and Sergio Soares. 2016.
+“Evidence Briefings: Towards a Medium to Transfer Knowledge from
+Systematic Reviews to Practitioners.” In *Proceedings of the 10th
+Acm/Ieee International Symposium on Empirical Software Engineering and
+Measurement*, 57. Association for Computing Machinery.
+doi:[10.1145/2961111.2962603](https://doi.org/10.1145/2961111.2962603).
+
+</div>
+
+<div id="ref-chen_2015_improve_quality">
+
+Chen, T. 2015. “Improving the Quality of Large-Scale Database-Centric
+Software Systems by Analyzing Database Access Code.” In *2015 31st Ieee
+International Conference on Data Engineering Workshops*, 245–49.
+doi:[10.1109/ICDEW.2015.7129584](https://doi.org/10.1109/ICDEW.2015.7129584).
+
+</div>
+
+<div id="ref-Chen:2016:Redundant:Data">
+
+Chen, T., W. Shang, Z. M. Jiang, A. E. Hassan, M. Nasser, and P. Flora.
+2016. “Finding and Evaluating the Performance Impact of Redundant Data
+Access for Applications That Are Developed Using Object-Relational
+Mapping Frameworks.” *IEEE Transactions on Software Engineering* 42
+(12): 1148–61.
+doi:[10.1109/TSE.2016.2553039](https://doi.org/10.1109/TSE.2016.2553039).
+
+</div>
+
+<div id="ref-Chen_Emparical_Study">
+
+Chen, T., W. Shang, J. Yang, A. E. Hassan, M. W. Godfrey, M. Nasser, and
+P. Flora. 2016. “An Empirical Study on the Practice of Maintaining
+Object-Relational Mapping Code in Java Systems.” In *2016 Ieee/Acm 13th
+Working Conference on Mining Software Repositories (Msr)*, 165–76.
+doi:[10.1109/MSR.2016.026](https://doi.org/10.1109/MSR.2016.026).
+
+</div>
+
+<div id="ref-Chen:2014:Performance:Anti-patterns">
+
+Chen, Tse-Hsun, Weiyi Shang, Zhen Ming Jiang, Ahmed E. Hassan, Mohamed
+Nasser, and Parminder Flora. 2014. “Detecting Performance Anti-Patterns
+for Applications Developed Using Object-Relational Mapping.” In
+*Proceedings of the 36th International Conference on Software
+Engineering*, 1001–12. ICSE 2014. New York, NY, USA: Association for
+Computing Machinery.
+doi:[10.1145/2568225.2568259](https://doi.org/10.1145/2568225.2568259).
+
+</div>
+
+<div id="ref-eclipseLinkBestPractices">
+
+Clarke, Doug. 2007. “What Is Object-Relational Mapping.” Disponível em:
+<https://wiki.eclipse.org/EclipseLink/FAQ/JPA/BestPractices>.
+
+</div>
+
+<div id="ref-badsmellplanilhas">
+
+Cunha, J., J. P. Fernandes, P. Martins, J. Mendes, and J. Saraiva. 2012.
+“SmellSheet Detective: A Tool for Detecting Bad Smells in Spreadsheets.”
+In *2012 Ieee Symposium on Visual Languages and Human-Centric Computing
+(Vl/Hcc)*, 243–44.
+doi:[10.1109/VLHCC.2012.6344535](https://doi.org/10.1109/VLHCC.2012.6344535).
+
+</div>
+
+<div id="ref-badsmellplanilhas2">
+
+Cunha, Jácome, João P. Fernandes, Hugo Ribeiro, and João Saraiva. 2012.
+“Towards a Catalog of Spreadsheet Smells.” In *Computational Science and
+Its Applications – Iccsa 2012*, edited by Beniamino Murgante, Osvaldo
+Gervasi, Sanjay Misra, Nadia Nedjah, Ana Maria A. C. Rocha, David
+Taniar, and Bernady O. Apduhan. Berlin, Heidelberg: Springer Berlin
+Heidelberg.
+
+</div>
+
+<div id="ref-jpa2006javaDeMichiel">
+
+DeMichiel, Linda, and Michael Keith. 2006. “Java Persistence Api.” *JSR*
+220.
+
+</div>
+
+<div id="ref-JpaComparativoFramework">
+
+Dhingra, Neha, Emad Abdelmoghith, and Hussien Mouftah. 2017. “Review on
+Jpa Based Orm Data Persistence Framework.” *International Journal of
+Computer Theory and Engineering* 9 (January): 318–28.
+doi:[10.7763/IJCTE.2017.V9.1160](https://doi.org/10.7763/IJCTE.2017.V9.1160).
+
+</div>
+
+<div id="ref-Spring-Petclinic">
+
+Dubois, Julien. 2013. “Improving the Performance of the Spring-Petclinic
+Sample Application (Part 1 of 5).” Disponível em:
+[encurtador.com.br/bxIUV](encurtador.com.br/bxIUV).
+
+</div>
+
+<div id="ref-mlr12_bost_performance">
+
+Durix, Hippolyte. 2020. “Boost the Performance of Your Spring Data Jpa
+Application.” Disponível em: [
+		https://blog.ippon.tech/boost-the-performance-of-your-spring-data-jpa-application/](
+		https://blog.ippon.tech/boost-the-performance-of-your-spring-data-jpa-application/).
+
+</div>
+
+<div id="ref-eclipseLinkManual">
+
+EclipseLink. 2013. “Java Persistence Api (Jpa) Extensions Reference for
+Eclipselink.” Disponível em:
+<https://www.eclipse.org/eclipselink/documentation/2.4/eclipselink_jpa_extensions.pdf>.
+
+</div>
+
+<div id="ref-eclipselinkmigration">
+
+———. 2017. “FAQ - Migrate Hibernate to Eclipselink.” Disponível em:
+<https://www.eclipse.org/eclipselink/documentation/2.5/solutions/migrhib002.htm>.
+
+</div>
+
+<div id="ref-eclipseLink">
+
+———. 2019. “What Is Object-Relational Mapping.” Disponível em:
+<https://wiki.eclipse.org/EclipseLink/FAQ/JPA#What_is_Object-Relational_Mapping>.
+
+</div>
+
+<div id="ref-elmari2010sistemas">
+
+Elmari, R, and SB Navathe. 2010. *Sistemas de Banco de Dados. 6 Edição*.
+Editora Pearson.
+
+</div>
+
+<div id="ref-badsmellxp">
+
+Elssamadisy, Amr, and Gregory Schalliol. 2002. “Recognizing and
+Responding to ‘Bad Smells’ in Extreme Programming.” In *Proceedings of
+the 24th International Conference on Software Engineering*, 617–22. ICSE
+’02. New York, NY, USA: ACM.
+doi:[10.1145/581339.581418](https://doi.org/10.1145/581339.581418).
+
+</div>
+
+<div id="ref-engines2019db">
+
+Engines, DB. 2019. “DB Engines Ranking.” Disponível em:
+<https://db-engines.com/en/ranking_categories/>.
+
+</div>
+
+<div id="ref-mlrfora1">
+
+Fabrício, U. 2015. “I Discovered an Undocumented Way to Improve Jpa
+Performance.” Disponível em:
+<https://bewire.be/blog/i-discovered-an-undocumented-way-to-improve-jpa-performance/>.
+
+</div>
+
+<div id="ref-badsmelljavascript">
+
+Fard, A. M., and A. Mesbah. 2013. “JSNOSE: Detecting Javascript Code
+Smells.” In *2013 Ieee 13th International Working Conference on Source
+Code Analysis and Manipulation (Scam)*, 116–25.
+doi:[10.1109/SCAM.2013.6648192](https://doi.org/10.1109/SCAM.2013.6648192).
+
+</div>
+
+<div id="ref-codemetric3">
+
+Fontana, Francesca Arcelli, Vincenzo Ferme, Marco Zanoni, and Aiko
+Yamashita. 2015. “Automatic Metric Thresholds Derivation for Code Smell
+Detection.” In *Proceedings of the Sixth International Workshop on
+Emerging Trends in Software Metrics*, 44–53. WETSoM ’15. Piscataway, NJ,
+USA: IEEE Press. <http://dl.acm.org/citation.cfm?id=2821491.2821501>.
+
+</div>
+
+<div id="ref-topLink">
+
+Foundation, Eclipse. 2019. “What Is Object-Relational Mapping.”
+Disponível em:
+<https://wiki.eclipse.org/EclipseLink/FAQ/JPA#What_is_Object-Relational_Mapping>.
+
+</div>
+
+<div id="ref-Martinfowler2018refactoring">
+
+Fowler, M. 2018. *Refactoring: Improving the Design of Existing Code*.
+Addison-Wesley Signature Series (Fowler). Pearson Education.
+[https://books.google.com.br/books?id=2H1\\\_DwAAQBAJ](https://books.google.com.br/books?id=2H1\_DwAAQBAJ).
+
+</div>
+
+<div id="ref-MartinFowler:1999">
+
+Fowler, Martin. 1999. *Refactoring: improving the design of existing
+code*. Addison-Wesley Object Technology Series. Reading, MA:
+Addison-Wesley. <http://cds.cern.ch/record/424198>.
+
+</div>
+
+<div id="ref-frakes1992information">
+
+Frakes, William B, and Ricardo Baeza-Yates. 1992. *Information
+Retrieval: Data Structures and Algorithms*. Prentice-Hall, Inc.
+
+</div>
+
+<div id="ref-arquitetura-smell-1">
+
+Garcia, J., D. Popescu, G. Edwards, and N. Medvidovic. 2009.
+“Identifying Architectural Bad Smells.” In *CSMR’09*.
+
+</div>
+
+<div id="ref-arquitetura-smell-2">
+
+Garcia, Joshua, Daniel Popescu, George Edwards, and Nenad Medvidovic.
+2009. “Toward a Catalogue of Architectural Bad Smells.” In
+*Architectures for Adaptive Software Systems*, edited by Raffaela
+Mirandola, Ian Gorton, and Christine Hofmeister. Berlin, Heidelberg:
+Springer Berlin Heidelberg.
+
+</div>
+
+<div id="ref-MLR2019">
+
+Garousi, Vahid, Michael Felderer, and Mika V. Mäntylä. 2019. “Guidelines
+for Including Grey Literature and Conducting Multivocal Literature
+Reviews in Software Engineering.” *Information and Software Technology*
+106: 101–21.
+doi:[https://doi.org/10.1016/j.infsof.2018.09.006](https://doi.org/https://doi.org/10.1016/j.infsof.2018.09.006).
+
+</div>
+
+<div id="ref-GitHub">
+
+GitHub. 2020. “Pesquisar Repositórios.” Disponível em:
+<https://docs.github.com/pt/github/searching-for-information-on-github/searching-for-repositories>.
+
+</div>
+
+<div id="ref-mlr5_perform_improvment">
+
+Gomes, Gustavo. 2016. “Performance Improvement in Java Applications: ORM
+/ Jpa.” Disponível em: [
+	https://dzone.com/articles/performance-improvement-in-java-applications-orm-j](
+	https://dzone.com/articles/performance-improvement-in-java-applications-orm-j).
+
+</div>
+
+<div id="ref-Goodman">
+
+Goodman, Leo. 1961. “Snowball Sampling.” *Ann Math Stat* 32 (March).
+doi:[10.1214/aoms/1177705148](https://doi.org/10.1214/aoms/1177705148).
+
+</div>
+
+<div id="ref-badsmellusuability">
+
+Grigera, Julián, Alejandra Garrido, and José Matías Rivero. 2014. “A
+Tool for Detecting Bad Usability Smells in an Automatic Way.” In *Web
+Engineering*, edited by Sven Casteleyn, Gustavo Rossi, and Marco
+Winckler. Cham: Springer International Publishing.
+
+</div>
+
+<div id="ref-mlr11_avoid_jpa_performance">
+
+Hut, Chris. 2015. “Avoiding Jpa Performance Pitfalls.” Disponível em: [
+		https://www.veracode.com/blog/secure-development/avoiding-jpa-performance-pitfalls](
+		https://www.veracode.com/blog/secure-development/avoiding-jpa-performance-pitfalls).
+
+</div>
+
+<div id="ref-mlr19_improve_jpa_perfomance">
+
+Janssen, Thorben. 2015. “How to Improve Jpa Performance | Rebel.”
+Disponível em:
+<https://www.jrebel.com/blog/how-to-improve-jpa-performance/>.
+
+</div>
+
+<div id="ref-thobernJanssenHibernateTips">
+
+———. 2017a. *Hibernate Tips*. Nermina Miller.
+
+</div>
+
+<div id="ref-mlr6_the_best_way_vlad">
+
+———. 2017b. “Solve Hibernate Performance Issues in Development.”
+Disponível em: [
+	https://stackify.com/find-hibernate-performance-issues/](
+	https://stackify.com/find-hibernate-performance-issues/).
+
+</div>
+
+<div id="ref-mlr8_comon_hibernate_thorben">
+
+———. 2018. “3 Common Hibernate Performance Issues in Your Log.”
+Disponível em: [
+		https://www.baeldung.com/hibernate-common-performance-problems-in-logs](
+		https://www.baeldung.com/hibernate-common-performance-problems-in-logs).
+
+</div>
+
+<div id="ref-thorbenJanssen">
+
+———. 2019a. “Entities or Dtos – When Should You Use Which Projection.”
+Disponível em:
+<https://thoughts-on-java.org/entities-dtos-use-projection>.
+
+</div>
+
+<div id="ref-throbenXMLAnotacao">
+
+———. 2019b. “Mapping Definitions in Jpa and Hibernate – Annotations, Xml
+or Both.” Disponível em:
+<https://thoughts-on-java.org/mapping-definitions-jpa-hibernate-annotations-xml/>.
+
+</div>
+
+<div id="ref-mlr3_tips_to_boost">
+
+———. 2020. “7 Tips to Boost Your Hibernate Performance - Thoughts on
+Java.” Disponível em: [
+	https://thoughts-on-java.org/tips-to-boost-your-hibernate-performance/](
+	https://thoughts-on-java.org/tips-to-boost-your-hibernate-performance/).
+
+</div>
+
+<div id="ref-keith2018pro">
+
+Keith, Mike, Merrick Schincariol, and Massimo Nardone. 2018. *Pro Jpa 2
+in Java Ee 8: An in-Depth Guide to Java Persistence Apis*. Apress.
+
+</div>
+
+<div id="ref-badsmell_change1">
+
+Khomh, Foutse, Massimiliano Di Penta, and Yann-Gael Gueheneuc. 2009. “An
+Exploratory Study of the Impact of Code Smells on Software
+Change-Proneness.” In *2009 16th Working Conference on Reverse
+Engineering*, 75–84. IEEE.
+
+</div>
+
+<div id="ref-som">
+
+Kohonen, Teuvo. 1990. “The Self-Organizing Map.” *Proceedings of the
+IEEE* 78 (9). IEEE: 1464–80.
+
+</div>
+
+<div id="ref-catalog_of_code_smell_orm">
+
+Loli, Samuel, Leopoldo Teixeira, and Bruno Cartaxo. 2020. “A Catalog of
+Object-Relational Mapping Code Smells for Java.” In *SBES 2020
+Research*. Natal, Rio Grande do Norte, Brasil.
+
+</div>
+
+<div id="ref-jvmreport">
+
+Maple, S., and A. Binstoc. 2018. “JVM Ecosystem Report 2018.” In *JVM
+Ecosystem Report 2018*.
+
+</div>
+
+<div id="ref-mlr10_n1_spring">
+
+Marciniec, Michal. 2019. “JPA: N+1 Select Problem \[Spring & Jpa
+Pitfalls Series.” Disponível em: [
+		https://codete.com/blog/jpa-n-plus-1-select-problem/](
+		https://codete.com/blog/jpa-n-plus-1-select-problem/).
+
+</div>
+
+<div id="ref-Martin:2008:CCH:1388398">
+
+Martin, Robert C. 2008. *Clean Code: A Handbook of Agile Software
+Craftsmanship*. 1st ed. Upper Saddle River, NJ, USA: Prentice Hall PTR.
+
+</div>
+
+<div id="ref-mlrfora2">
+
+Mat, B. 2011. “Hibernate Performance - Stack Overflow.” Disponível em:
+<https://stackoverflow.com/questions/5155718/hibernate-performance>.
+
+</div>
+
+<div id="ref-mlr13_JPA_otimizando">
+
+Medeiros, Igor. 2015. “Java Persistence Api: Otimizando a Performance
+Das Aplicações.” Disponível em: [
+		https://www.devmedia.com.br/java-persistence-api-otimizando-a-performance-das-aplicacoes/32091](
+		https://www.devmedia.com.br/java-persistence-api-otimizando-a-performance-das-aplicacoes/32091).
+
+</div>
+
+<div id="ref-high_perform_vlad">
+
+Mihalcea, V. 2016. *High-Performance Java Persistence*. Vlad Mihalcea.
+[https://books.google.com.br/books?id=g\\\_gaMQAACAAJ](https://books.google.com.br/books?id=g\_gaMQAACAAJ).
+
+</div>
+
+<div id="ref-mlr7_hibernate_performance">
+
+Mihalcea, Vlad. 2016a. “Hibernate Performance Tuning and Best
+Practices.” Disponível em: [
+	https://in.relation.to/2016/09/28/performance-tuning-and-best-practices/](
+	https://in.relation.to/2016/09/28/performance-tuning-and-best-practices/).
+
+</div>
+
+<div id="ref-mlr17_High-Performance">
+
+———. 2016b. “High-Performance Hibernate Devoxx France.” Disponível em:
+<https://www.slideshare.net/VladMihalcea/high-performance-hibernate-devoxx-france>.
+
+</div>
+
+<div id="ref-mlr1_eclipslink">
+
+———. 2017. “Performance Features.” Disponível em:
+<https://www.eclipse.org/eclipselink/documentation/2.7/solutions/performance001.htm/>;
+Eclipse Foundation.
+
+</div>
+
+<div id="ref-mlr2_vlad_mihalcea_2019">
+
+———. 2019a. “Hibernate Performance Tuning Tips.” Disponível em:
+<https://vladmihalcea.com/hibernate-performance-tuning-tips/>; Vlad
+Mihalcea.
+
+</div>
+
+<div id="ref-mlr18_eager_fetching_code_smell">
+
+———. 2019b. “EAGER Fetching Is a Code Smell When Using Jpa and
+Hibernate.” Disponível em:
+<https://vladmihalcea.com/eager-fetching-is-a-code-smell/>.
+
+</div>
+
+<div id="ref-vlad_mihalcea_enable_lazy_load">
+
+———. 2019c. “The Hibernate.enable\_lazy\_load\_no\_trans Anti-Pattern.”
+Disponível em:
+<https://vladmihalcea.com/the-hibernate-enable_lazy_load_no_trans-anti-pattern>.
+
+</div>
+
+<div id="ref-vlad_mihalcea_n1">
+
+———. 2019d. “How to Detect the Hibernate N+1 Query Problem During
+Testing.” Disponível em:
+<https://vladmihalcea.com/how-to-detect-the-n-plus-one-query-problem-during-testing/>.
+
+</div>
+
+<div id="ref-mlr4_the_best_way_vlad">
+
+———. 2020a. “The Best Way to Prevent Jpa and Hibernate Performance
+Issues.” Disponível em: [
+	https://vladmihalcea.com/jpa-hibernate-performance-issues/](
+	https://vladmihalcea.com/jpa-hibernate-performance-issues/).
+
+</div>
+
+<div id="ref-vlad_mihalcea_lazyInitialization">
+
+———. 2020b. “The Best Way to Handle the Lazyinitializationexception.”
+<https://vladmihalcea.com/the-best-way-to-handle-the-lazyinitializationexception/>.
+
+</div>
+
+<div id="ref-ManyToOneCommon">
+
+———. 2020c. “ManyToOne Jpa and Hibernate Association Best Practices.”
+Disponível em: <https://vladmihalcea.com/manytoone-jpa-hibernate/>.
+
+</div>
+
+<div id="ref-mlr15_hibernate_543">
+
+Mihalcea, Vlad, Steve Ebersole, Gunnar Morling Andrea Boriero, Gail
+Badner, Chris Cranford, Emmanuel Bernard, Sanne Grinovero, et al. 2018.
+“Hibernate Orm 5.4.3.Final User Guide.” Disponível em:
+<https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html>.
+
+</div>
+
+<div id="ref-hibernate_hql">
+
+———. 2019. “HQL and Jpql.” Disponível em:
+<https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#hql>.
+
+</div>
+
+<div id="ref-10.1007/11687061_7">
+
+Monteiro, Miguel P., and João M. Fernandes. 2006. “Towards a Catalogue
+of Refactorings and Code Smells for Aspectj.” In *Transactions on
+Aspect-Oriented Software Development I*, edited by Awais Rashid and
+Mehmet Aksit. Berlin, Heidelberg: Springer Berlin Heidelberg.
+
+</div>
+
+<div id="ref-mlr14_hibernate_n1">
+
+Munhoz, João. 2019. “Hibernate and the N+1 Selections Problem -
+Quintoandar Tech.” Disponível em: [
+		https://medium.com/quintoandar-tech-blog/hibernate-and-the-n-1-selections-problem-c497710fa3fe](
+		https://medium.com/quintoandar-tech-blog/hibernate-and-the-n-1-selections-problem-c497710fa3fe).
+
+</div>
+
+<div id="ref-codemetric1">
+
+Munro, M. J. 2005. “Product Metrics for Automatic Identification of ‘Bad
+Smell’ Design Problems in Java Source-Code.” In *11th Ieee International
+Software Metrics Symposium (Metrics’05)*, 15–15.
+doi:[10.1109/METRICS.2005.38](https://doi.org/10.1109/METRICS.2005.38).
+
+</div>
+
+<div id="ref-gustavoPinto">
+
+Nazário, M. F. C., E. Guerra, R. Bonifácio, and G. Pinto. 2019.
+“Detecting and Reporting Object-Relational Mapping Problems: An
+Industrial Report.” In *2019 Acm/Ieee International Symposium on
+Empirical Software Engineering and Measurement (Esem)*, 1–6.
+
+</div>
+
+<div id="ref-openJpaManual">
+
+OpenJpa, Apache. 2019. “Apache Openjpa 3.1 User’s Guide.” Disponível em:
+<http://openjpa.apache.org/builds/3.1.0/apache-openjpa/docs/manual.pdf>.
+
+</div>
+
+<div id="ref-oppenheim2000questionnaire">
+
+Oppenheim, A.N. 2000. *Questionnaire Design, Interviewing and Attitude
+Measurement*. Bloomsbury Academic.
+<https://books.google.com.br/books?id=6V4GnZS7TO4C>.
+
+</div>
+
+<div id="ref-mlr9_toplink_perfomance">
+
+Oracle. 2015. “9 Oracle Toplink (Eclipselink) Jpa Performance Tuning.”
+Disponível em: [
+		https://docs.oracle.com/middleware/1212/core/ASPER/toplink.htm](
+		https://docs.oracle.com/middleware/1212/core/ASPER/toplink.htm).
+
+</div>
+
+<div id="ref-Palomba:2013:DBS:3107656.3107692">
+
+Palomba, Fabio, Gabriele Bavota, Massimiliano Di Penta, Rocco Oliveto,
+Andrea De Lucia, and Denys Poshyvanyk. 2013. “Detecting Bad Smells in
+Source Code Using Change History Information.” In *Proceedings of the
+28th Ieee/Acm International Conference on Automated Software
+Engineering*, 268–78. ASE’13. Piscataway, NJ, USA: IEEE Press.
+doi:[10.1109/ASE.2013.6693086](https://doi.org/10.1109/ASE.2013.6693086).
+
+</div>
+
+<div id="ref-database_smell">
+
+Sharma, Tushar, Marios Fragkoulis, Stamatia Rizou, Magiel Bruntink, and
+Diomidis Spinellis. 2018. “Smelly Relations: Measuring and Understanding
+Database Schema Quality.” In *Proceedings of the 40th International
+Conference on Software Engineering: Software Engineering in Practice*,
+55–64. ICSE-Seip ’18. New York, NY, USA: Association for Computing
+Machinery.
+doi:[10.1145/3183519.3183529](https://doi.org/10.1145/3183519.3183529).
+
+</div>
+
+<div id="ref-silberschatzsistema">
+
+Silberschatz, Abraham, Henry F Korth, and S Sudarshan. 2006. *Sistema de
+Banco de Dados*. Elsevier Editora Ltda.
+
+</div>
+
+<div id="ref-codemetric2">
+
+Simon, F., F. Steinbruckner, and C. Lewerentz. 2001. “Metrics Based
+Refactoring.” In *Proceedings Fifth European Conference on Software
+Maintenance and Reengineering*, 30–38.
+doi:[10.1109/CSMR.2001.914965](https://doi.org/10.1109/CSMR.2001.914965).
+
+</div>
+
+<div id="ref-SpotBugsPlugin">
+
+SpotBugs. 2018a. “Implement Spotbugs Plugin.” Disponível em:
+<https://spotbugs.readthedocs.io/en/stable/implement-plugin.html>.
+
+</div>
+
+<div id="ref-spotbugsOficial">
+
+———. 2018b. “SpotBugs Manual.” Disponível em:
+<https://spotbugs.readthedocs.io/en/stable/>.
+
+</div>
+
+<div id="ref-terra2008ferramentas">
+
+Terra, Ricardo, and Roberto S Bigonha. 2008. “Ferramentas Para análise
+Estática de códigos Java.” *Monografia, Universidade Federal de Minas
+Gerais (UFMG), Belo Horizonte*.
+
+</div>
+
+<div id="ref-TOM20131498">
+
+Tom, Edith, Aybüke Aurum, and Richard Vidgen. 2013. “An Exploration of
+Technical Debt.” *Journal of Systems and Software* 86 (6): 1498–1516.
+doi:[https://doi.org/10.1016/j.jss.2012.12.052](https://doi.org/https://doi.org/10.1016/j.jss.2012.12.052).
+
+</div>
+
+<div id="ref-Tomassi:2018:BWE:3236024.3275439">
+
+Tomassi, David A. 2018. “Bugs in the Wild: Examining the Effectiveness
+of Static Analyzers at Finding Real-World Bugs.” In *Proceedings of the
+2018 26th Acm Joint Meeting on European Software Engineering Conference
+and Symposium on the Foundations of Software Engineering*, 980–82.
+ESEC/Fse 2018. New York, NY, USA: ACM.
+doi:[10.1145/3236024.3275439](https://doi.org/10.1145/3236024.3275439).
+
+</div>
+
+<div id="ref-experienced_and_inexperienced">
+
+Tsunoda, T., H. Washizaki, Y. Fukazawa, S. Inoue, Y. Hanai, and M.
+Kanazawa. 2017. “Evaluating the Work of Experienced and Inexperienced
+Developers Considering Work Difficulty in Sotware Development.” In *2017
+18th Ieee/Acis International Conference on Software Engineering,
+Artificial Intelligence, Networking and Parallel/Distributed Computing
+(Snpd)*, 161–66.
+
+</div>
+
+<div id="ref-vial2018lessons">
+
+Vial, Gregory. 2018. “Lessons in Persisting Object Data Using
+Object-Relational Mapping.” *IEEE Software*. IEEE.
+
+</div>
+
+<div id="ref-antipatterns_of_one_to_many">
+
+Węgrzynowicz, P. 2013. “Performance Antipatterns of One to Many
+Association in Hibernate.” In *2013 Federated Conference on Computer
+Science and Information Systems*, 1475–81.
+
+</div>
+
+<div id="ref-white2014java">
+
+White, Oliver. 2014. “Java Tools and Technologies Landscape for 2014.”
+*Retrieved Octubre* 30: 2014.
+
+</div>
+
+<div id="ref-badsmell_manutebilidade1">
+
+Yamashita, Aiko, and Leon Moonen. 2013. “Exploring the Impact of
+Inter-Smell Relations on Software Maintainability: An Empirical Study.”
+In *Proceedings of the 2013 International Conference on Software
+Engineering*, 682–91. IEEE Press.
+
+</div>
+
+</div>
+
+[^1]: <https://docs.jboss.org/hibernate/jpa/2.1/api/>
+
+
