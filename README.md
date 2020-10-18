@@ -169,7 +169,7 @@ smell* ORM devido aos seguintes riscos:
     relacionamentos anotados como <span
     style="font-variant:small-caps;">Eager</span>, será realizada uma
     sub-consulta para cada relacionamento, podendo gerar o problema do
-    $N+1$ (Mihalcea et al. 2018).
+    `N+1` (Mihalcea et al. 2018).
 
 -   Ao definir um relacionamento na classe para <span
     style="font-variant:small-caps;">Eager</span> não poderá
@@ -226,7 +226,7 @@ explicitamente com a estratégia de busca do tipo <span
 style="font-variant:small-caps;">Eager</span>. Com essa estratégia, a
 consulta pode exigir um produto cartesiano limitando a velocidade da
 consulta a quantidade de registros associados, ou gerando o problema de
-$N+1$ (o qual será visto na próxima seção) com $N$ consultas adicionais
+`N+1` (o qual será visto na próxima seção) com $N$ consultas adicionais
 (V. Mihalcea 2016).
 
 Com base no exposto, consideramos um *code smell* a utilização da
@@ -636,7 +636,7 @@ completar a informação de seus relacionamentos e montar o objeto
 desejado e seus relacionamentos. Essa ação pode causar um problema de
 desempenho dependendo da quantidade de consultas que são realizadas para
 completar a operação (Vlad Mihalcea 2019d). Esse problema é conhecido
-como $N+1$, quando a partir de uma instrução ORM são geradas <span
+como `N+1`, quando a partir de uma instrução ORM são geradas <span
 style="font-variant:small-caps;">N</span> outras, sendo apresentado no
 Capítulo \[chap:intro\] como exemplo motivacional desta pequisa. A
 Figura abaixo apresenta um exemplo no qual ao
@@ -652,7 +652,7 @@ relacionamento com a entidade `discente`.
 
 
 Através da análise do código, podemos detectar *code smells* que podem
-gerar o problema de $N+1$, os quais são descritos a seguir.
+gerar o problema de `N+1`, os quais são descritos a seguir.
 
 ### Falta de <span style="font-variant:small-caps;">JOIN FETCH</span> nas consultas de atributos do tipo <span style="font-variant:small-caps;">Eager</span>
 
@@ -665,7 +665,7 @@ style="font-variant:small-caps;">JOIN FETCH</span> para o objeto
 relacionado, faz com que o *framework* ORM realize $N$ consultas até que
 todos os objetos associados aos atributos do tipo <span
 style="font-variant:small-caps;">Eager</span> fiquem com os dados
-completos gerando o problema do $N+1$. O exemplo abaixo apresenta um código no qual uma consulta
+completos gerando o problema do `N+1`. O exemplo abaixo apresenta um código no qual uma consulta
 para retornar uma lista da entidade `Discente` apresenta $N$ consultas
 adicionais para entidade `Pessoa` realizadas pelo ORM para preencher as
 informações do objeto `Pessoa` que esta com relacionamento <span
@@ -708,7 +708,7 @@ style="font-variant:small-caps;">Eager</span>.
 Para corrigir, uma das formas possíveis seria alterar o mapeamento para
 <span style="font-variant:small-caps;">Lazy</span>. Porém, se não for
 possível alterar o tipo de estratégia na classe devido a dependências,
-uma possibilidade de refatoração para evitar o $N+1$ seria realizar
+uma possibilidade de refatoração para evitar o `N+1` seria realizar
 <span style="font-variant:small-caps;">JOIN FETCH</span> para todos os
 atributos <span style="font-variant:small-caps;">Eager</span> na
 consulta ORM. Desta forma o *framework* ORM fará junções para trazer as
@@ -774,7 +774,7 @@ resolvem a causa real do problema  (Vlad Mihalcea 2019c). A melhor
 opção, nesse caso, é buscar todos os relacionamentos necessários antes
 de fechar o contexto de persistência por meio da cláusula <span
 style="font-variant:small-caps;">JOIN FETCH</span> (Mihalcea et al.
-2018). Por esse motivo, para evitar o $N+1$, a solução recomendada
+2018). Por esse motivo, para evitar o `N+1`, a solução recomendada
 quando não possível realizar a refatoração de <span
 style="font-variant:small-caps;">Eager</span> para <span
 style="font-variant:small-caps;">Lazy</span> é utilizar <span
@@ -799,7 +799,7 @@ realizar a junção entre as duas entidades.
 prática o exposto até o momento, no capítulo \[chap:intro\] utilizamos
 como motivação desta pesquisa um problema ocasionado pelo HQL do
 [Exemplo \[alg:java\]]{}, e pelo mapeamento realizado no [Exemplo
-\[alg:sig\_eager\]]{}, que gerava o problema $N+1$ no sistema do . Foram
+\[alg:sig\_eager\]]{}, que gerava o problema `N+1` no sistema do . Foram
 realizadas duas refatorações que são detalhadas nesta seção utilizando
 as formas descritas no parágrafo anterior:
 
@@ -847,7 +847,7 @@ Conforme as situações expostas, consultas ORM utilizando entidades que
 contenham atributos com a estratégia de busca do tipo <span
 style="font-variant:small-caps;">Eager</span> e sem realizar o <span
 style="font-variant:small-caps;">JOIN FETCH</span> para a entidade
-relacionada, poderão causar $N+1$, sendo uma prática não recomendada que
+relacionada, poderão causar `N+1`, sendo uma prática não recomendada que
 indica necessidade de refatoração com potencial para gerar problemas de
 desempenho e manutenibilidade, podendo ser catalogado como um *code
 smell ORM*.
@@ -902,7 +902,7 @@ style="font-variant:small-caps;">Lazy</span>.
 
 #### Sugestão de Refatoração 
 
-Abaixo listamos duas soluções possíveis para evitar $N+1$ neste caso:
+Abaixo listamos duas soluções possíveis para evitar `N+1` neste caso:
 
 -   `@BatchSize(N)`: utilizar a anotação `@BatchSize` sobre o atributo
     do tipo <span style="font-variant:small-caps;">Lazy</span>. Dessa
