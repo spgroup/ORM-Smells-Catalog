@@ -120,7 +120,7 @@ entidade `Pessoa`.
 ```java
     @Entity
     class Discente{
-     @ManyToOne%*\Hig{(fetch = FetchType.LAZY)}%*
+     @ManyToOne(fetch = FetchType.LAZY)
      private Pessoa pessoa;	
      ...
     }
@@ -310,7 +310,7 @@ próprio objeto apenas com a informação necessária para o caso de uso.
 ```java
     public Discente findDiscenteById(Integer id){
      ...
-     hql.append(%*\Hig{"SELECT new Discente(matricula) "}%*)
+     hql.append("SELECT new Discente(matricula) ")
      hpl.append("FROM Discente WHERE id = :id");
      Query q = entityManager.createQuery(hql.toString());
      q.setInteger("id", id);
@@ -456,7 +456,7 @@ parametrização por padrão. O Exemplo abaixo apresenta a utilização da anota
   **Código Java:**
 ```java
     @Entity
-    %*\Hig{@DynamicUpdate}%*
+    @DynamicUpdate
     class Discente{
     ... 
      @Column
@@ -571,8 +571,8 @@ visão, evitando problemas de desempenho com o crescimento dos dados.
     public List<Discente> findByYear(int year, int fromIndex, int limit){
      String hql = "FROM Discente d WHERE ano = :ano";
      Query q = entityManager.createQuery(hql.toString());
-     %*\Hig{q.setFirstResult(fromIndex);}%*
-     %*\Hig{q.setMaxResults(limit);}%*
+     q.setFirstResult(fromIndex);
+     q.setMaxResults(limit);
      ....
     }
 
@@ -730,7 +730,7 @@ para recuperar em forma de junção a entidade `Pessoa`.
     public List<Discente> findDiscentesByYear(int year){
      ...
      hql.append("FROM Discente d ");
-     hql.append("%*\Hig{JOIN FETCH d.pessoa}%* p WHERE d.ano = :ano");
+     hql.append("JOIN FETCH d.pessoa p WHERE d.ano = :ano");
      Query q = entityManager.createQuery(hql.toString());
      q.setInteger("ano", year);
      return (List<Discente>)  q.getResultList();
@@ -919,7 +919,7 @@ Abaixo listamos duas soluções possíveis para evitar $N+1$ neste caso:
     class Pessoa{
       ...
       @OneToMany(fetch = FetchType.LAZY)
-      %*\Hig{@BatchSize(size = 5)}%*
+      @BatchSize(size = 5)
       private List <Discente> discentes;	
       ...
     }
@@ -962,7 +962,7 @@ Abaixo listamos duas soluções possíveis para evitar $N+1$ neste caso:
     }
 
     public List<Pessoa> findAll(){
-      String hql = "FROM Pessoa pes %*\Hig{JOIN FETCH pes.discentes}%*";
+      String hql = "FROM Pessoa pes JOIN FETCH pes.discentes";
       ...
     }
 
@@ -1089,7 +1089,7 @@ Existem duas formas possíveis de ajustar este *code smell*:
     @Entity
     class Pessoa{
       ...
-      @OneToMany(cascade = CascadeType.ALL, %*\Hig{mappedBy = "pessoa"}%*)
+      @OneToMany(cascade = CascadeType.ALL, mappedBy = "pessoa")
       private List<Discente> discentes = new ArrayList<Discente>();	
     }
     @Entity
@@ -1097,8 +1097,8 @@ Existem duas formas possíveis de ajustar este *code smell*:
       @Id
       private Integer id;
       private Integer matricula;
-      %*\Hig{@ManyToOne(fetch = FetchType.LAZY)}%*
-      %*\Hig{private Pessoa pessoa}%*;
+      @ManyToOne(fetch = FetchType.LAZY)
+      private Pessoa pessoa;
     }
 
     public static void main(String[] args) {
@@ -1131,7 +1131,7 @@ Existem duas formas possíveis de ajustar este *code smell*:
     class Pessoa{
       ...
       @OneToMany(cascade = CascadeType.ALL)
-      private %*\Hig{Set<Discente>}%* discentes = new HashSet<Discente>();	
+      private Set<Discente> discentes = new HashSet<Discente>();	
     }
     @Entity
     class Discente{
@@ -1264,7 +1264,7 @@ detalhadas outras formas possíveis de configuração.
      String hql = "FROM Discente d WHERE id = :id";
      Query q = entityManager.createQuery(hql.toString(), Discente.class);
      q.setInteger("id", id);
-     %*\Hig{q.setHint("org.hibernate.readOnly", true)}%*
+     q.setHint("org.hibernate.readOnly", true)
      return q.uniqueResult();
     }
 ```
