@@ -241,8 +241,7 @@ utilizar <span style="font-variant:small-caps;">Lazy</span> a nível de
 classe e utilizar o comportamento <span
 style="font-variant:small-caps;">Eager</span> a nível de consulta
 através de <span style="font-variant:small-caps;">Join Fetch</span> para
-os que necessitarem. Fazendo uma relação com o apresentado na Seção
-\[sec:bad\_smells\] é possível concluir que é uma indicação de
+os que necessitarem. Fazendo uma relação com com o conceito de *code smell* é possível concluir que é uma indicação de
 refatoração, uma má escolha de implementação e indica possíveis
 problemas futuros relativos a desempenho e manutenibilidade. Portanto,
 qualquer atributo em uma classe que representa uma associação entre
@@ -341,8 +340,7 @@ recuperar colunas que contenham informações grandes do banco de dados
 desnecessário pelo banco e pela aplicação (Chen, Shang, Jiang, et al.
 2016). Se for necessário atualizar os dados posterior a recuperação, é
 importante buscar a entidade completa para ser gerenciada pelo
-*framework* ORM, isso devido ao chamado *mecanismo de verificação suja*,
-conforme discutido na Seção \[jpa-secao\] (Mihalcea et al. 2018).
+*framework* ORM, isso devido ao chamado *mecanismo de verificação suja* (Mihalcea et al. 2018).
 
 No entendimento de (Mihalcea et al. 2018), se o objetivo for recuperar
 informações somente leitura, é recomendável utilizar manipulando somente
@@ -751,7 +749,7 @@ para recuperar em forma de junção a entidade `Pessoa`.
 #### Detalhamento e Discussão
 
 Utilizar EAGER como estratégia de busca para relacionamentos é um *code
-smell* como visto na Seção \[subsection:EAGER\_ESTATICO\], portanto a
+smell* como visto na Seção referente ao smell [1](#eager-como-estratégia-de-busca-nos-relacionamentos-a-nível-de-classe-estático), portanto a
 melhor abordagem é evitar o uso de <span
 style="font-variant:small-caps;">Eager</span> como estratégia de busca a
 nível de classe. Porém para casos onde se deseja realizar consultas ORM
@@ -778,8 +776,7 @@ style="font-variant:small-caps;">JOIN FETCH</span> (Mihalcea et al.
 quando não possível realizar a refatoração de <span
 style="font-variant:small-caps;">Eager</span> para <span
 style="font-variant:small-caps;">Lazy</span> é utilizar <span
-style="font-variant:small-caps;">JOIN FETCH</span> nas consultas ORM
-conforme recomendado na Seção \[subsection:refat\].
+style="font-variant:small-caps;">JOIN FETCH</span> nas consultas ORM.
 
 Com relação a refatoração apresentada utilizando <span
 style="font-variant:small-caps;">JOIN FETCH</span> é necessário um
@@ -949,7 +946,7 @@ Abaixo listamos duas soluções possíveis para evitar `N+1` neste caso:
     melhor, sendo possível obter todos os dados em uma única consulta. O
     exemplo abaixo demonstra a
     utilização de <span style="font-variant:small-caps;">JOIN
-    FETCH</span> como refatoração para o exemplo anterior apresentado na Seção Descrição do Smell.
+    FETCH</span> como refatoração para o exemplo anterior apresentado na Seção referente a descrição do smell.
   
   **Código Java:**
 ```java
@@ -982,8 +979,7 @@ Abaixo listamos duas soluções possíveis para evitar `N+1` neste caso:
 
 #### Detalhamento e Discussão
 
-Por motivos de desempenho, conforme exposto na Seção
-\[fetchtypePadrao\], a especificação JPA utiliza as coleções
+Por motivos de desempenho, a especificação JPA utiliza as coleções
 `@OneToMany` e `@ManyToMany` com estratégia de busca <span
 style="font-variant:small-caps;">Lazy</span> por padrão. Isso significa,
 segundo (Hut 2015), que o contexto de persistência não carregará a
@@ -997,12 +993,7 @@ uma das estratégias de correção muito utilizada e facilmente encontrada
 no StackOverFlow é a alteração para a estratégia de busca <span
 style="font-variant:small-caps;">Eager</span> a nível de classe. Porém,
 esta resolução substitui um problema por outro, mostrando a dificuldade
-de manutenção causada pelo *smell*. Conforme comentado na Seção
-\[subsection:EAGER\_ESTATICO\], utilizar <span
-style="font-variant:small-caps;">Eager</span> a nível de classe poderá
-gerar o problema de dados em excesso, carregando mais dados do que o
-necessário, sendo uma melhor estratégia seguir as refatorações sugeridas
-na Seção \[refatoracao\_lazy\].
+de manutenção causada pelo *smell*. 
 
 Podemos concluir que o acesso um por um utilizando uma estrutura de
 repetição com a estratégia de busca do tipo <span
@@ -1119,7 +1110,7 @@ Existem duas formas possíveis de ajustar este *code smell*:
     coleção `SET`. Esta coleção tem como característica não armazenar
     valores duplicados, fazendo com que *framework* ORM altere no banco
     de dados apenas o registro modificado na coleção. O exemplo abaixo demonstra a refatoração
-    realizada no exemplo anterior apresentado na Seção Descrição do Smell trocando a coleção
+    realizada no exemplo anterior apresentado na Seção descrição do smell trocando a coleção
     `List` por `Set`. Desta forma o relacionamento continua sendo
     representado pela entidade `Pessoa_Discente`, mas a instrução gerada
     pelo ORM é igualmente proporcional a alteração realizada nos
