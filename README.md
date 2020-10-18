@@ -1,28 +1,13 @@
-Catálogo de Code Smells ORM
+# Catálogo de Code Smells ORM
 ===========================
 
-A tecnologia *ORM* apresenta diversos benefícios, com abstração das comunicações
-pertinentes a camada de dados e conversão entre objetos e o banco de
-dados relacional, permitindo ao desenvolvedor um foco maior no
-desenvolvimento das regras de negócio. Todavia essa abstração pode
-trazer problemas de desempenho e manutenibilidade se as configurações,
-mapeamentos e instruções ORM forem realizadas de forma inadequada. Nesta
-seção, apresentamos o catálogo de *code smells* ORM em Java. A definição do que representa
-um *code smell* é decorrente de uma análise subjetiva baseada na
+A tecnologia *ORM* apresenta diversos benefícios, com abstração das comunicações pertinentes a camada de dados e conversão entre objetos e o banco de dados relacional, permitindo ao desenvolvedor um foco maior no
+desenvolvimento das regras de negócio. Todavia essa abstração pode trazer problemas de desempenho e manutenibilidade se as configurações, mapeamentos e instruções ORM forem realizadas de forma inadequada. Nesta seção, apresentamos o catálogo de *code smells* ORM em Java. A definição do que representa um *code smell* é decorrente de uma análise subjetiva baseada na
 experiência e na intuição humana. Para que uma prática seja considerada
-um *code smell* considerando o domínio específico de ORM em Java, ela
-deve indicar uma má escolha de implementação e sugerir sintomas que
-podem ser indicativos de algo errado no código, indicando a necessidade
-de refatoração. Portanto, com base nos resultados das revisões (RR e
-GLR), extraímos más práticas relacionadas a ORM em Java. O catálogo possui o foco em Java devido à
-linguagem possuir uma especificação padrão para ORM através da API JPA
-que permite categorizar de uma mesma maneira *code smells* ORM em
-diferentes *frameworks*. Foram selecionados *code smells* cujo conteúdo
-possui pelo menos três citações em fontes diferentes nas revisões
-realizadas, resultando em oito *code smells* ORM.
+um *code smell* considerando o domínio específico de ORM em Java, ela deve indicar uma má escolha de implementação e sugerir sintomas que podem ser indicativos de algo errado no código, indicando a necessidade de refatoração. Portanto, com base nos resultados das revisões (RR e GLR), extraímos más práticas relacionadas a ORM em Java. O catálogo possui o foco em Java devido à linguagem possuir uma especificação padrão para ORM através da API JPA que permite categorizar de uma mesma maneira *code smells* ORM em diferentes *frameworks*. Foram selecionados *code smells* cujo conteúdo possui pelo menos três citações em fontes diferentes nas revisões realizadas, resultando em oito *code smells* ORM.
 
 Os *code smells* selecionados foram agrupados por
-tipos. Os tipos foram definidos como os possíveis problemas causados
+tipos, definidos como os possíveis problemas causados
 pelo conjunto de *code smells* relacionados. Para uniformização, cada
 *code smell* ORM está estruturado em: *descrição do smell*, com uma
 descrição resumida do *code smell* ORM bem como exemplo prático;
@@ -30,15 +15,24 @@ sugestão de refatoração, apresentando as melhores práticas encontradas
 nas revisões realizadas e um exemplo prático corrigindo o apresentado na
 descrição do *smell*; por fim, uma discussão e detalhamento referente ao
 *code smell* em questão. 
-<!-- A Tabela abaixo apresenta os oito
-*code smells* ORM selecionados para o catálogo, contendo um breve resumo
-e categorizados por tipo de problema, seguidos pelas referências das
-evidências do RR e GLR a partir dos quais os extraímos. -->
+A Tabela abaixo apresenta os oito *code smells* ORM selecionados para o catálogo, contendo um breve resumo e categorizados por tipo de problema, seguidos pelas referências das evidências do RR e GLR a partir dos quais os extraímos.
 
 <!-- <img src="figures/catalogo_tabela.jpg" width="800"> -->
 
+|Tipo |Code Smell ORM | Referências da Revisão | Resumo|
+|-----|---------------|------------------------|-------|
+|Dados em Excesso| 1. Eager como estratégia de busca nos relacionamentos a nível de classe | [RR01], [RR03], [RR04], [GLR02], [GLR03], [GLR04], [GLR05], [GLR07], [GLR09], [GLR10], [GLR11], [GLR12], [GLR13], [GLR14], [GLR15], [GLR16], [GLR17], [GLR18]. | Atributos que representam relacionamento mapeados com estratégia de busca Eager a nível de classe (estático) faz o objeto relacionado sempre ser carregado pelo ORM, mesmo quando não utilizado, sem poder alterar o comportamento a nível de consulta (dinâmico)|
+|Dados em Excesso| 2. Recuperação de dados sem projeção para somente leitura | [RR01], [GLR02], [GLR03], [GLR05], [GLR17]. | Não utilização de projeção ou DTOs para recuperar somente os atributos desejados do banco de dados quando o resultado for utilizado apenas para leitura, faz com que sejam recuperados dados em excesso. |
+|Dados em Excesso| 3. Atualização desnecessária de toda a entidade | [RR01], [RR02], [RR03]. | Qualquer alteração de atributos na classe faz com que todas as colunas da entidade mapeada sejam atualizadas no banco de dados, quando seria necessário atualizar apenas as colunas dos atributos alterados. |
+|Dados em Excesso| 4. Falta de paginação quando não necessário todo o resultado | [GLR01], [GLR02], [GLR05], [GLR13], [GLR17]. | Consultas que retornam coleção de dados sem a utilização dos parâmetros de paginação para limitar os resultados quando não utilizado todos os registros. |
+|N + 1| 5. Falta de Join Fetch: estratégia de busca Eager | [RR01], [RR04], [GLR02], [GLR04], [GLR05], [GLR06], [GLR07], [GLR09], [GLR10], [GLR11], [GLR12], [GLR13], [GLR14], [GLR15], [GLR16], [GLR17], [GLR18]. | Consultas ORM sem utilização de JOIN FETCH para os atributos que estão mapeados como Eager a nível de classe, gerando N consultas adicionais para carregar os objetos relacionados. |
+|N + 1| 6. Acesso um por um: estrutura de repetição e estratégia de busca Lazy | [RR03], [RR04], [GLR01], [GLR05], [GLR08], [GLR10], [GLR11], [GLR12], [GLR13], [GLR14], [GLR16], [GLR19]. | Ao recuperar um atributo de um objeto referente a uma entidade dentro de uma estrutura de repetição, se a estratégia de busca for Lazy, consultas adicionais serão executadas para cada iteração. |
+|N + 1| 7. @OneToMany unilateral com uso inadequado de coleções | [RR05], [GLR07], [GLR15]. | @OneToMany unilateral com uso inadequando de coleções Java faz com que a cada inserção/remoção de um elemento seja modificado todos os registros da coleção no banco de dados. |
+|Outros| 8. Não uso de consultas somente leitura | [GLR01], [GLR02], [GLR15]. | Objetos recuperados da base de dados para fins únicos de consultas sem que possuam configurações para somente leitura, faz com que seja gerenciado pelo contexto de persistência desnecessariamente. |
 
-Dados em excesso 
+
+
+## Dados em excesso 
 ----------------
 
 Segundo (Mihalcea et al. 2018), trazer dados em excesso do banco de
@@ -54,7 +48,9 @@ matricula do objeto `discente`, a consulta gerada pelo *framework* ORM
 busca mais informações que a desejada no banco de dados. A seguir são
 apresentados os *code smells* relacionados a este problema.
 
-![](figures/dadosExcesso.png "fig:")
+<p align="center"> 
+<img src="figures/dadosExcesso.png">
+</p>
 
 ### Eager como estratégia de busca nos relacionamentos a nível de classe (estático) 
 
@@ -115,9 +111,7 @@ tratamento em nível de consulta, realizando <span
 style="font-variant:small-caps;">JOIN FETCH</span> na consulta para a
 regra de negócio ou através da anotação `@NamedEntityGraph` introduzida
 no JPA 2.1[^1] que permite definir um grafo de entidades a serem
-recuperadas no banco de dados. O [Exemplo
-\[alg:eager\_smell\_refactory\]]{} apresenta a refatoração do [Exemplo
-\[alg:eager\_smell\]]{}, alterando a estratégia de busca para <span
+recuperadas no banco de dados. O Exemplo abaixo apresenta a refatoração do Exemplo anterior, alterando a estratégia de busca para <span
 style="font-variant:small-caps;">Lazy</span>, evitando assim o <span
 style="font-variant:small-caps;">JOIN</span> desnecessário com a
 entidade `Pessoa`.
@@ -265,7 +259,7 @@ mais graves, devido ao *Many* (Muitos) ao fim do relacionamento, o que
 faz com que a consulta de um objeto apenas, trará sempre $N$ outros
 objetos do relacionamento.
 
-### Recuperação de dados sem projeção para somente leitura {#sec:projecao}
+### Recuperação de dados sem projeção para somente leitura 
 
 #### Descrição do *Smell*
 
@@ -275,7 +269,7 @@ persistência é necessário) pode ocasionar problemas de desempenho,
 especialmente ao recuperar informações grandes como colunas do tipo
 <span style="font-variant:small-caps;">BLOB</span> ou junções com outras
 entidades de forma desnecessária, gerando incompatibilidade entre dados
-necessários e dados recuperados. O [Exemplo \[alg:projecao\_smell\]]{}
+necessários e dados recuperados. O Exemplo abaixo
 demonstra a ocorrência do *smell*, onde o HQL utilizado recupera todas
 as colunas da entidade `Discente`, incluindo dados grandes (coluna
 `arquivo`), sendo apenas a informação da matrícula necessária para o
@@ -309,9 +303,7 @@ Para evitar trazer todos os dados da entidade, a recomendação é utilizar
 projeção nas consultas. Uma das formas de realizar projeção em consultas
 ORM é utilizar o operador `NEW`. Esse operador permite declarar apenas
 as colunas ou atributos que são necessários carregar do banco de dados
-através do construtor da classe consultada ou de um . O [Exemplo
-\[alg:projecao\_smell\_refactory\]]{} demonstra um ajuste no [Exemplo
-\[alg:projecao\_smell\]]{} utilizando o operador `NEW` para trazer o
+através do construtor da classe consultada ou de um . O Exemplo abaixo demonstra um ajuste no Exemplo anterior utilizando o operador `NEW` para trazer o
 próprio objeto apenas com a informação necessária para o caso de uso.
   
   **Código Java:**
@@ -412,7 +404,7 @@ Atualização de todas as colunas de uma entidade, quando somente um
 atributo do objeto é atualizado, acarreta em atualização de dados em
 excesso e pode gerar problemas de desempenho, especialmente quando a
 entidade possui índices não clusterizados, dados grandes binários ou um
-grande número de colunas. O [Exemplo \[alg:update\_smell\]]{} demonstra
+grande número de colunas. O Exemplo abaixo demonstra
 o *smell* no qual é desejado atualizar apenas o campo `observação` da
 entidade `Discente`, mas a instrução `Update` gerada pelo ORM atualiza
 todas as colunas da entidade, incluindo índices e tipo <span
@@ -457,8 +449,7 @@ realizem atualização apenas das alterações realizadas. No *Hibernate*
 por exemplo é possível utilizar a anotação `@DynamicUpdate` ou realizar
 instruções ORM (HQL/JPQL ou Criteria) para atualizar somente as colunas
 desejadas. Alguns *frameworks* como o EclipseLink apresentam esta
-parametrização por padrão. O [Exemplo
-\[alg:update\_smell\_refactory\]]{} apresenta a utilização da anotação
+parametrização por padrão. O Exemplo abaixo apresenta a utilização da anotação
 `@DynamicUpdate` fazendo com que seja atualizado apenas o atributo
 `observacao` na instrução `Update` gerada pelo ORM.
   
@@ -536,7 +527,7 @@ parâmetros de paginação quando os registros não são totalmente
 utilizados, implica em recuperação de dados em excesso causando uma
 sobrecarga desnecessária, além de utilizar um alto consumo de memória
 para armazenar a informação recuperada gerando problemas de desempenho.
-O [Exemplo \[alg:paginacao\_smell\]]{} apresenta a ocorrência do *Smell*
+O Exemplo abaixo apresenta a ocorrência do *Smell*
 recuperando todos os registros da entidade `Discente` que entraram no
 ano de 2020, mas utilizando efetivamente apenas 10 registros que foram
 solicitados pela camada de visão, supondo que o método
@@ -569,8 +560,8 @@ A especificação JPA disponibiliza os seguintes métodos:
 `Query` ou `TypedQuery` provendo recursos de paginação que podem ser
 utilizados ao realizar uma consulta ORM. Desta forma é possível realizar
 uma limitação nos resultados que solicitam uma coleção de dados. O
-[Exemplo \[alg:paginacao\_smell\_refactory\]]{} apresenta refatoração do
-[Exemplo \[alg:paginacao\_smell\]]{} utilizando uma consulta paginada
+Exemplo abaixo apresenta refatoração do
+exemplo anterior utilizando uma consulta paginada
 para gerar a instrução SQL com limites para o resultado, recuperando
 apenas os 10 registros da entidade `Discente` solicitados pela camada de
 visão, evitando problemas de desempenho com o crescimento dos dados.
@@ -624,7 +615,7 @@ com o tempo (Vlad Mihalcea 2019a). Em um primeiro momento pode não
 apresentar problemas de desempenho mas com o aumento de dados pode se
 tornar um grande problema. Também dificulta a manutenção do código, pois
 o ajuste implica em alterações na estrutura dos métodos conforme
-[Exemplo \[alg:paginacao\_smell\_refactory\]]{}.
+exemplo na seção de sugestão de refatoração.
 
 Com base no exposto, podemos considerar um *code smell* ORM a não
 utilização de paginação em coleções de dados quando os registros
@@ -633,7 +624,7 @@ implementação, cabível de refatoração por indicar possíveis problemas
 futuros relativos a desempenho com o crescimento da quantidade de
 registros.
 
-Problema do N+1
+## Problema do N+1
 ---------------
 
 Os *frameworks* ORM abstraem o SQL e o mapeamento manual dos objetos,
@@ -654,7 +645,11 @@ solicitar uma lista do objeto `Pessoa`, a partir da consulta principal
 style="font-variant:small-caps;">N</span> outras consultas para obter o
 relacionamento com a entidade `discente`.
 
-![](figures/n1-representacao.png "fig:")
+
+<p align="center"> 
+<img src="figures/n1-representacao.png">
+</p>
+
 
 Através da análise do código, podemos detectar *code smells* que podem
 gerar o problema de $N+1$, os quais são descritos a seguir.
@@ -670,8 +665,7 @@ style="font-variant:small-caps;">JOIN FETCH</span> para o objeto
 relacionado, faz com que o *framework* ORM realize $N$ consultas até que
 todos os objetos associados aos atributos do tipo <span
 style="font-variant:small-caps;">Eager</span> fiquem com os dados
-completos gerando o problema do $N+1$. O [Exemplo
-\[alg:join\_fetch\_smell\]]{} apresenta um código no qual uma consulta
+completos gerando o problema do $N+1$. O exemplo abaixo apresenta um código no qual uma consulta
 para retornar uma lista da entidade `Discente` apresenta $N$ consultas
 adicionais para entidade `Pessoa` realizadas pelo ORM para preencher as
 informações do objeto `Pessoa` que esta com relacionamento <span
@@ -719,9 +713,8 @@ uma possibilidade de refatoração para evitar o $N+1$ seria realizar
 atributos <span style="font-variant:small-caps;">Eager</span> na
 consulta ORM. Desta forma o *framework* ORM fará junções para trazer as
 informações dos relacionamentos em uma única consulta em vez de gerar
-$N$ consultas extras. O [Exemplo
-\[alg:join\_fetch\_smell\_refactory\]]{} apresenta a correção para o
-problema de N+1 gerado pelo [Exemplo \[alg:join\_fetch\_smell\]]{}
+$N$ consultas extras. O exemplo abaixo apresenta a correção para o
+problema de N+1 gerado pelo exemplo anterior
 adicionando <span style="font-variant:small-caps;">JOIN FETCH</span>
 para recuperar em forma de junção a entidade `Pessoa`.
   
@@ -800,7 +793,9 @@ style="font-variant:small-caps;">JOIN FETCH</span>. Segundo (Janssen
 instrução <span style="font-variant:small-caps;">JOIN FETCH</span> é
 específica da JPA. Ela informa ao provedor de persistência para
 inicializar também a associação no objeto recuperado e não somente
-realizar a junção entre as duas entidades. Para exemplificar de forma
+realizar a junção entre as duas entidades. 
+
+<!-- Para exemplificar de forma
 prática o exposto até o momento, no capítulo \[chap:intro\] utilizamos
 como motivação desta pesquisa um problema ocasionado pelo HQL do
 [Exemplo \[alg:java\]]{}, e pelo mapeamento realizado no [Exemplo
@@ -846,7 +841,7 @@ as formas descritas no parágrafo anterior:
     segundos em média e a quantidade de consultas adiciona diminuiu de
     116 para 0.
 
-    ![[]{data-label="fig:eager"}](figures/eager.png)
+    ![[]{data-label="fig:eager"}](figures/eager.png) -->
 
 Conforme as situações expostas, consultas ORM utilizando entidades que
 contenham atributos com a estratégia de busca do tipo <span
@@ -857,7 +852,7 @@ indica necessidade de refatoração com potencial para gerar problemas de
 desempenho e manutenibilidade, podendo ser catalogado como um *code
 smell ORM*.
 
-### Acesso um por um: estrutura de repetição e estratégia de busca do tipo <span style="font-variant:small-caps;">Lazy</span> {#sec:discussao_onebyone}
+### Acesso um por um: estrutura de repetição e estratégia de busca do tipo <span style="font-variant:small-caps;">Lazy</span> 
 
 #### Descrição do *Smell*
 
@@ -866,7 +861,7 @@ coleção de objetos utilizando alguma estrutura de repetição, cujo
 atributo está com a estratégia de busca do tipo <span
 style="font-variant:small-caps;">Lazy</span>, em cada passagem pela
 estrutura de repetição serão geradas consultas adicionais. Essa questão
-é melhor visualizada a partir do [Exemplo \[alg:n1\_lazy\_smell\]]{} que
+é melhor visualizada a partir do exemplo abaixo que
 demonstra uma consulta para recuperação de uma lista do objeto `Pessoa`
 e ao acessar o atributo `discentes` em uma estrutura de repetição, são
 geradas consultas extras para carregar o relacionamento <span
@@ -905,7 +900,7 @@ style="font-variant:small-caps;">Lazy</span>.
 ```
   ---------------------------
 
-#### Sugestão de Refatoração {#refatoracao_lazy}
+#### Sugestão de Refatoração 
 
 Abaixo listamos duas soluções possíveis para evitar $N+1$ neste caso:
 
@@ -914,9 +909,8 @@ Abaixo listamos duas soluções possíveis para evitar $N+1$ neste caso:
     forma em vez de gerar $N$ consultas, o *framework* ORM utilizará o
     operador `IN` do SQL. Poderá ser definido o número de elementos como
     parâmetro, definindo o tamanho para o carregamento em lote de
-    coleções ou entidades. O [Exemplo
-    \[alg:n1\_lazy\_smell\_refactory2\]]{} apresenta a refatoração do
-    [Exemplo \[alg:n1\_lazy\_smell\]]{} utilizando a anotação
+    coleções ou entidades. O exemplo abaixo apresenta a refatoração do
+    exemplo anterior utilizando a anotação
     `@BatchSize`
   
   **Código Java:**
@@ -953,10 +947,9 @@ Abaixo listamos duas soluções possíveis para evitar $N+1$ neste caso:
     style="font-variant:small-caps;">JOIN FETCH</span> para carregar
     antecipadamente os objetos ou utilizar s pode ser uma estratégia
     melhor, sendo possível obter todos os dados em uma única consulta. O
-    [Exemplo \[alg:n1\_lazy\_smell\_refactory\]]{} demonstra a
+    exemplo abaixo demonstra a
     utilização de <span style="font-variant:small-caps;">JOIN
-    FETCH</span> como refatoração para o [Exemplo
-    \[alg:n1\_lazy\_smell\]]{}
+    FETCH</span> como refatoração para o exemplo anterior apresentado na Seção Descrição do Smell.
   
   **Código Java:**
 ```java
@@ -1021,7 +1014,7 @@ style="font-variant:small-caps;">Lazy</span>; não ser carregado de forma
 antecipada na consulta (*JOIN FECTH*); não conter a anotação
 `@BatchSize` no atributo do relacionamento.
 
-### `@OneToMany` unilateral com uso inadequado de coleções {#sec:one_to_many}
+### `@OneToMany` unilateral com uso inadequado de coleções 
 
 #### Descrição do *Smell*
 
@@ -1030,8 +1023,7 @@ correspondente `@ManyToOne` no outro lado da relação) com o uso
 inadequado de coleções, como `Collection` ou `List`, poderá gerar o
 problema de N+1 quando uma alteração em um elemento de uma coleção faz
 com que todos os registros relacionados sejam removidos e adicionados
-novamente, dependendo da semântica utilizada. O [Exemplo
-\[alg:onetomany\_smell\]]{} demonstra a ocorrência deste *smell*. Neste
+novamente, dependendo da semântica utilizada. O exemplo abaixo demonstra a ocorrência deste *smell*. Neste
 exemplo, ao adicionar um novo `Discente` na coleção `discentes` do
 objeto `Pessoa` (considera-se que existem registros pré-existentes de
 discentes na entidade representativa da relação `Pessoa_Discente` na
@@ -1072,7 +1064,7 @@ novamente juntamente com o novo registro.
 ```
   ---------------------------
 
-#### Sugestão de Refatoração {#sugestão-de-refatoração-4}
+#### Sugestão de Refatoração
 
 Existem duas formas possíveis de ajustar este *code smell*:
 
@@ -1083,16 +1075,14 @@ Existem duas formas possíveis de ajustar este *code smell*:
     `mappedBy` no `@OneToMany` (Vlad Mihalcea 2016a). Assim, segundo
     (Mihalcea et al. 2018) o *framework* ORM irá utilizar o lado com a
     anotação `@ManyToOne` da relação bidirecional sempre que um dos
-    lados forem manipulados. O [Exemplo
-    \[alg:onetomany\_smell\_refactory1\]]{} demonstra o ajuste realizado
-    no [Exemplo \[alg:onetomany\_smell\]]{}, adicionando a anotação
+    lados forem manipulados. O exemplo abaixo demonstra o ajuste realizado
+    no exemplo anterior, adicionando a anotação
     `@ManyToOne`, o atributo responsável pelo relacionamento na classe
     `Discente` e informando através da anotação `mappedBy` na classe
     `Pessoa`. Além das instruções geradas pelo ORM serem otimizadas, a
     estrutura das entidades é modificada ficando a entidade `Discente`
     com a chave estrangeira relacionado a Pessoa, deixando de ter uma
-    tabela adicional para representar a relação como no [Exemplo
-    \[alg:onetomany\_smell\]]{}.
+    tabela adicional para representar a relação.
   
   **Código Java:**
 ```java
@@ -1128,9 +1118,8 @@ Existem duas formas possíveis de ajustar este *code smell*:
     uma relação bidirecional, sugere-se trocar o tipo da coleção para a
     coleção `SET`. Esta coleção tem como característica não armazenar
     valores duplicados, fazendo com que *framework* ORM altere no banco
-    de dados apenas o registro modificado na coleção. O [Exemplo
-    \[alg:onetomany\_smell\_refactory\]]{} demonstra a refatoração
-    realizada no [Exemplo \[alg:onetomany\_smell\]]{} trocando a coleção
+    de dados apenas o registro modificado na coleção. O exemplo abaixo demonstra a refatoração
+    realizada no exemplo anterior apresentado na Seção Descrição do Smell trocando a coleção
     `List` por `Set`. Desta forma o relacionamento continua sendo
     representado pela entidade `Pessoa_Discente`, mas a instrução gerada
     pelo ORM é igualmente proporcional a alteração realizada nos
@@ -1175,27 +1164,24 @@ persistentes. A Tabela \[tab:onetomany1\] apresenta três semânticas de
 coleções utilizadas pelo ORM com a combinação do tipo de coleção Java e
 anotações do JPA.
 
-[|m[3cm]{}|m[5cm]{}|m[6cm]{}|]{} **Semânticas & **Tipo Java &
-**Anotações\
-Semântica `Bag` & `java.util.Collection` `java.util.List` &
-`@OneToMany`\
-Semântica `List` & `java.util.List` & `@OneToMany` & (`@IndexColumn` v
-`@OrderColumn`)\
-Semântica `Set` & `java.util.Set` & `@OneToMany`\
-******
+|Semânticas |Tipo Java |Anotações |
+|-----------|----------|-----------|
+|Semântica `Bag` | `java.util.Collection` `java.util.List` |`@OneToMany`|
+|Semântica `List` | `java.util.List` | `@OneToMany` | (`@IndexColumn` v `@OrderColumn`)|
+Semântica `Set` | `java.util.Set` | `@OneToMany`|
+</br>
 
 O número e o tipo de instrução executada pelo ORM muda de acordo com a
 semântica utilizada. A Tabela \[tab:onetomany2\] demonstra o número de
 instruções geradas ao persistir uma coleção após uma inserção ou remoção
 dada a semântica utilizada. (Węgrzynowicz 2013)
 
-[|m[3cm]{}|m[5cm]{}|m[6cm]{}|]{} **Semânticas & **Adicionando um
-elemento & **Removendo um elemento\
-Semântica `Bag` & 1 remoção, N inserções & 1 remoção, N inserções\
-Semântica `List` & 1 inserção, N atualizações & 1 remoção, N
-atualizações\
-Semântica `Set` & 1 inserção & 1 remoção\
-******
+|Semânticas |Adicionando um elemento | Removendo um elemento|
+|-----------|----------|-----------|
+Semântica `Bag` | 1 remoção, N inserções | 1 remoção, N inserções|
+Semântica `List` | 1 inserção, N atualizações | 1 remoção, N atualizações|
+Semântica `Set` | 1 inserção | 1 remoção|
+</br>
 
 Segundo (Vlad Mihalcea 2016a), a utilização do tipo `Set` para
 representar uma coleção unilateral é a forma mais eficiente, seguido
@@ -1245,7 +1231,7 @@ consulta e sem informar ao *framework* ORM que o objeto recuperado não
 necessita ser gerenciado pelo contexto de persistência, faz com que a
 busca seja menos eficiente, ocupando espaço desnecessário na memória ao
 guardar o estado do objeto e deixando a fase de liberação do contexto de
-persistência mais lenta. O [Exemplo \[alg:somente\_leitura\_smell\]]{}
+persistência mais lenta. O exemplo abaixo
 apresenta a ocorrência do *smell* onde se deseja obter para fins únicos
 de consulta o objeto `Discente`, mas é recuperado no modo padrão <span
 style="font-variant:small-caps;">READ-WRITE</span> do JPA, mantendo o
@@ -1261,16 +1247,15 @@ desnecessariamente.
      return q.uniqueResult();
     }
 ```
-#### Sugestão de Refatoração {#sugestão-de-refatoração-5}
+#### Sugestão de Refatoração 
 
 Existem diferentes configurações possíveis que podem ser utilizadas para
 informar que o objeto recuperado será utilizado somente para consulta,
 diferenciando para cada *framework* ORM. Estas configurações podem ser a
 nível de classe, sessão ou consulta. Outra opção é a utilização de DTOs
-em vez de recuperar a entidade mapeada. O [Exemplo
-\[alg:somente\_leitura\_smell\_refactory\]]{} demonstra a utilização da
+em vez de recuperar a entidade mapeada. O exemplo abaixo demonstra a utilização da
 configuração a nível de consulta para o *framework* ORM Hibernate como
-refatoração para o [Exemplo \[alg:somente\_leitura\_smell\]]{}, fazendo
+refatoração para o exemplo anterior, fazendo
 com que o objeto `Discente` não seja gerenciado pelo contexto de
 persistência. Na Seção \[sub:detalhamento\_somente\_leitura\] são
 detalhadas outras formas possíveis de configuração.
@@ -1283,7 +1268,7 @@ detalhadas outras formas possíveis de configuração.
      return q.uniqueResult();
     }
 ```
-#### Detalhamento e Discussão {#sub:detalhamento_somente_leitura}
+#### Detalhamento e Discussão 
 
 Recuperar entidades no modo somente leitura é mais eficiente do que
 buscar entidades em modo de leitura e gravação (Mihalcea et al. 2018). É
@@ -1305,29 +1290,27 @@ entidade, nível de sessão ou a nível de consulta:
     seja do tipo somente leitura. Qualquer tentativa de salvar nova
     informação na base será lançada uma exceção (Janssen 2017a). Pode
     ser através da anotação `@Immutable` para o Hibernate (Mihalcea et
-    al. 2018), conforme [Exemplo \[alg:utilizacao\_imutable\]]{}, ou
+    al. 2018), conforme exemplo abaixo, ou
     anotação `@ReadyOnly` para o EclipseLink (EclipseLink 2017).
 ```java
-        @Entity(name = "parametros") @Immutable
-        public static class Parametros {
-         @Id
-         private Long id;
-         private String nome;}   
+    @Entity(name = "parametros") @Immutable
+    public static class Parametros {
+      @Id
+      private Long id;
+      private String nome;}   
 ```
 -   A nível de sessão: É possível transformar a sessão do
     `entityManager` em uma sessão que fará consultas somente leitura
-    (Bauer, King, and Gregory 2016). O [Exemplo
-    \[alg:utilizacao\_leitura\_sessao\]]{} demonstra a utilização no
+    (Bauer, King, and Gregory 2016). O exemplo abaixo demonstra a utilização no
     código fonte.
 ```java
-        Session session = entityManager.unwrap(Session.class);
-        session.setDefaultReadOnly(true);
+    Session session = entityManager.unwrap(Session.class);
+    session.setDefaultReadOnly(true);
 ```
 -   A nível de consulta: é possível definir na própria consulta ORM,
     também com distinções entre os *frameworks* ORM. Para o Hibernate, é
     possível realizar a consulta utilizando
-    `setHint(org.hibernate.readOnly,true)`, conforme já demonstrado no
-    [Exemplo \[alg:somente\_leitura\_smell\]]{}.
+    `setHint(org.hibernate.readOnly,true)`.
 
 Portanto, se um objeto representativo de uma entidade for recuperado da
 base para fins únicos de consulta a dados e não esteja definido como
